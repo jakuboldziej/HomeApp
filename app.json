@@ -1,13 +1,14 @@
 {
   "expo": {
     "name": "HomeApp",
-    "slug": "HomeApp",
+    "slug": "homeapp",
+    "scheme": "homeapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,12 +17,28 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "usesCleartextTraffic": true
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8b6b3294-2a71-4f27-b9d3-1a7739da19d1"
+      }
+    },
+    "owner": "jakuboldziej",
+    "plugins": [
+      "expo-router"
+    ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8b6b3294-2a71-4f27-b9d3-1a7739da19d1"
     }
   }
 }
