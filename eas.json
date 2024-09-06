@@ -7,11 +7,22 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development"
+      "channel": "development",
+      "env": {
+        "EXPO_BACKEND_URL": "https://8227-188-122-23-154.ngrok-free.app"
+      }
     },
     "preview": {
       "channel": "staging",
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_BACKEND_URL": "https://oldziej.pl"
+      }
+    },
+    "production": {
+      "env": {
+        "EXPO_BACKEND_URL": "https://oldziej.pl"
+      }
     }
   },
   "submit": {
