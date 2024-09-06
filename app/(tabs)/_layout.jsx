@@ -1,15 +1,13 @@
-import { View, Text, Button, TouchableOpacity } from 'react-native'
+import { View, Text, KeyboardAvoidingView } from 'react-native'
 import React from 'react'
 import { Tabs } from 'expo-router'
-import { House, Target } from 'lucide-react-native'
+import { House, Target, User } from 'lucide-react-native'
 
 const TabIcon = ({ icon, name, focused }) => {
   return (
     <View className="flex items-center justify-center">
       <View>{icon}</View>
-      <Text
-        className={focused ? "font-psemibold text-green" : "font-pregular"}
-      >
+      <Text className={focused ? "font-psemibold text-green" : "font-pregular"}>
         {name}
       </Text>
     </View>
@@ -21,6 +19,7 @@ const TabsLayout = () => {
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true
       }}
     >
       <Tabs.Screen
@@ -46,6 +45,20 @@ const TabsLayout = () => {
             <TabIcon
               icon={<Target color={focused ? 'green' : 'black'} size={22} />}
               name="Darts"
+              focused={focused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='user'
+        options={{
+          title: 'User',
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              icon={<User color={focused ? 'green' : 'black'} size={22} />}
+              name="User"
               focused={focused}
             />
           ),

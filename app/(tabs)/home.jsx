@@ -7,7 +7,7 @@ const Home = () => {
     <SafeAreaView className="h-full bg-black">
       <ScrollView contentContainerStyle={{ height: "100%" }}>
         <View className="w-full h-full flex items-center p-4">
-          <Text className="text-white text-3xl">Home App</Text>
+          <Text className="text-white text-3xl font-psemibold">Home App</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -1,11 +1,15 @@
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '../components/CustomButton';
-import { useEffect, useRef, useState } from 'react';
-import { login } from '../fetch';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
+import { AuthContext } from '../context/AuthContext';
+import * as SecureStore from 'expo-secure-store';
+import { getUser } from '../fetch';
 
 const App = () => {
+  const { setUser, login } = useContext(AuthContext);
+
   const [isLoading, setIsLoading] = useState(false);
   const [err, setErr] = useState('');
 
@@ -18,16 +22,16 @@ const App = () => {
     setIsLoading(true);
 
     try {
-      const response = await login(username, password);
+      // const response = await login(username, password);
+      const response = await login("kubek", "Kubek6034#");
 
       if (!response.token) {
-        console.log(response)
         setErr(response.message)
         setIsLoading(false);
         return;
       }
 
-      router.push('/home');
+      router.replace('/home');
     } catch (err) {
       console.log(err.stack)
     }
@@ -44,13 +48,28 @@ const App = () => {
     }
   }, [err]);
 
+  const getSecureStore = async () => {
+    setIsLoading(true);
+    const alreadyLoggedIn = await SecureStore.getItemAsync("user");
+    if (alreadyLoggedIn) {
+      const loggedInUser = await getUser(alreadyLoggedIn)
+      setUser(loggedInUser);
+      router.replace("/home");
+    }
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    getSecureStore();
+  }, []);
+
   return (
     <SafeAreaView className="h-full px-4 bg-black">
-      <ScrollView contentContainerStyle={{ height: "100%" }}>
+      <ScrollView contentContainerStyle={{ height: "100%" }} keyboardShouldPersistTaps='handled'>
         <View className="w-full h-full flex flex-col justify-center items-center">
           <View className="w-full space-y-4">
             <Text className="text-3xl text-white font-pregular">Log In to Home App</Text>
-            <Text className="text-white pt-2">Username</Text>
+            {/* <Text className="text-white pt-2">Username</Text>
             <TextInput
               className="bg-lime w-full p-4 rounded-xl font-pregular"
               placeholder='Username'
@@ -69,9 +88,9 @@ const App = () => {
               onChangeText={(e) => setPassword(e)}
               onSubmitEditing={handleSubmit}
               autoComplete='password'
-            />
-            <CustomButton title='Login' containerStyles="w-full mt-6" isLoading={isLoading} onPress={handleSubmit} />
-            <Text className="text-red text-xl text-center">{err}</Text>
+            /> */}
+            <CustomButton title='Login' containerStyle="w-full mt-6" isLoading={isLoading} onPress={handleSubmit} />
+            <Text className="text-red text-xl text-center font-bold">{err}</Text>
           </View>
         </View>
       </ScrollView>

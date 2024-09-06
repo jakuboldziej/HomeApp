@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 const CustomButton = ({
   title,
   onPress,
-  containerStyles,
+  containerStyle,
   textStyles,
   isLoading,
 }) => {
@@ -11,11 +11,11 @@ const CustomButton = ({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className={`bg-green rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${isLoading ? "opacity-50" : ""
+      className={`bg-green rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyle} ${isLoading ? "opacity-50" : ""
         }`}
       disabled={isLoading}
     >
-      <Text className={`text-primary font-psemibold text-lg ${textStyles}`}>
+      <Text className={`text-primary font-psemibold text-lg px-4 ${textStyles}`}>
         {title}
       </Text>
 
@@ -24,7 +24,7 @@ const CustomButton = ({
           animating={isLoading}
           color="#fff"
           size="small"
-          className="ml-2"
+          className="pr-4"
         />
       )}
     </TouchableOpacity>

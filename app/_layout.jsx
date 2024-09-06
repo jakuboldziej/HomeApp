@@ -2,6 +2,7 @@ import { SplashScreen, Stack } from 'expo-router'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import ContextProviders from '../context/ContextProviders';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,13 +29,13 @@ const RootLayout = () => {
   if (!fontsLoaded && !error) return null;
 
   return (
-    <>
+    <ContextProviders>
       <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
       <StatusBar backgroundColor='#161622' style='light' />
-    </>
+    </ContextProviders>
   )
 }
 
