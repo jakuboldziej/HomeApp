@@ -22,6 +22,12 @@
     "production": {
       "env": {
         "EXPO_BACKEND_URL": "https://oldziej.pl"
+      },
+      "android": {
+        "image": "latest"
+      },
+      "ios": {
+        "image": "latest"
       }
     }
   },
