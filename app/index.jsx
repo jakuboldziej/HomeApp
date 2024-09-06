@@ -2,10 +2,11 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '../components/CustomButton';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { AuthContext } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
-import { getUser } from '../fetch';
+import { getUser } from '../lib/fetch';
+import { socket } from '../lib/socketio';
 
 const App = () => {
   const { setUser, login } = useContext(AuthContext);
@@ -55,6 +56,7 @@ const App = () => {
       const loggedInUser = await getUser(alreadyLoggedIn)
       setUser(loggedInUser);
       router.replace("/home");
+      socket.connect();
     }
     setIsLoading(false);
   }
@@ -62,6 +64,7 @@ const App = () => {
   useEffect(() => {
     getSecureStore();
   }, []);
+
 
   return (
     <SafeAreaView className="h-full px-4 bg-black">

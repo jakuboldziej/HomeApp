@@ -1,10 +1,13 @@
 import React from 'react'
 import { AuthProvider } from './AuthContext'
+import { DartsGameProvider } from './DartsGameContext'
 
 function ContextProviders({ children }) {
   return (
     <AuthProvider>
-      {children}
+      <DartsGameProvider>
+        {children}
+      </DartsGameProvider>
     </AuthProvider>
   )
 }

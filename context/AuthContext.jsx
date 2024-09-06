@@ -1,7 +1,8 @@
 import { createContext, useState } from "react";
-import { getUser } from "../fetch";
+import { apiUrl, getUser } from "../lib/fetch";
 import * as SecureStore from 'expo-secure-store';
 import { router } from "expo-router";
+import { socket } from "../lib/socketio";
 
 export const AuthContext = createContext()
 
@@ -9,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const login = async (username, password) => {
-    const response = await fetch('https://oldziej.pl/api/auth/login', {
+    const response = await fetch(`${apiUrl}/auth/login`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -29,6 +30,8 @@ export const AuthProvider = ({ children }) => {
     setUser(loggedUser);
     await SecureStore.setItemAsync("user", loggedUser.displayName);
 
+    socket.connect();
+
     return fetchedUser;
   }
 
@@ -36,6 +39,8 @@ export const AuthProvider = ({ children }) => {
     router.replace("/")
     setUser(null);
     await SecureStore.deleteItemAsync("user");
+
+    socket.disconnect();
   }
 
   return (

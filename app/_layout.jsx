@@ -30,9 +30,12 @@ const RootLayout = () => {
 
   return (
     <ContextProviders>
-      <Stack>
+      <Stack screenOptions={{
+        animation: 'slide_from_right'
+      }}>
         <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name='(darts)/dartskeyboard' options={{ headerShown: false, gestureEnabled: false }} />
       </Stack>
       <StatusBar backgroundColor='#161622' style='light' />
     </ContextProviders>

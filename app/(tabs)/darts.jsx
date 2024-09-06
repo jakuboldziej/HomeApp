@@ -1,15 +1,26 @@
-import { View, Text, ScrollView, TextInput } from 'react-native'
+import { View, Text, ScrollView, TextInput, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import CustomButton from '../../components/CustomButton'
+import { socket } from '../../lib/socketio'
+import { joinLiveGamePreview } from '../../lib/fetch'
+import { router } from 'expo-router'
 
 const Darts = () => {
-  const [gameCode, setGameCode] = useState('');
+  const [gameCode, setGameCode] = useState('1988');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleJoinDartsGame = async () => {
     setIsLoading(true);
-    console.log(gameCode);
+
+    const response = await joinLiveGamePreview(gameCode);
+
+    if (response.ok) {
+      router.push({ pathname: '/dartskeyboard', params: { gameCode: JSON.stringify(response.game.gameCode) } });
+    } else {
+      Alert.alert("Game code is wrong.")
+    }
+
     setIsLoading(false);
   }
 
@@ -29,7 +40,7 @@ const Darts = () => {
               returnKeyType='done'
               onSubmitEditing={handleJoinDartsGame}
             />
-            <CustomButton title="Join game" onPress={handleJoinDartsGame} isLoading={isLoading} />
+            <CustomButton title="Join game" onPress={handleJoinDartsGame} isLoading={isLoading} isDisabled={gameCode === ''} />
           </View>
         </View>
       </ScrollView>

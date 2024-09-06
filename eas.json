@@ -28,7 +28,8 @@
       },
       "ios": {
         "image": "latest"
-      }
+      },
+      "channel": "production"
     }
   },
   "submit": {
