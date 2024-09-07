@@ -1,8 +1,8 @@
 import { View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import CustomButton from '../CustomButton';
-import { socket } from '../../lib/socketio';
 import { DartsGameContext } from '../../context/DartsGameContext';
+import { socket } from '../../lib/socketio';
 
 const inputTailwind = "bg-creamy rounded-[25px] m-0.5";
 
@@ -14,7 +14,7 @@ const GameKeyboard = () => {
     socket.emit("externalKeyboardInput", JSON.stringify({
       input: input,
       gameCode: game.gameCode
-    }))
+    }));
 
     if (input === "DOUBLE" || input === "TRIPLE") {
       specialState[0] ? setSpecialState([false, ""]) : setSpecialState([true, input]);
@@ -29,9 +29,9 @@ const GameKeyboard = () => {
     } else if (type === 'TRIPLE') {
       return specialState[1] === 'DOUBLE';
     }
-    //  else if (type === 'BACK') {
-    // return specialState[1] === 'DOUBLE' || specialState[1] === 'TRIPLE' || game.record.length <= 1;
-    // }
+    else if (type === 'BACK') {
+      return specialState[1] === 'DOUBLE' || specialState[1] === 'TRIPLE' || game?.record?.length <= 1;
+    }
     return specialState[1] === 'TRIPLE' || specialState[1] === 'DOUBLE' || specialState[1] === type;
   }
 
@@ -81,13 +81,13 @@ const GameKeyboard = () => {
           onPress={() => handleClick('END')}
           isDisabled={handleDisabledSpecial()}
         />}
-        <CustomButton
+        {game?.record?.length === 1 && <CustomButton
           containerStyle={`${inputTailwind} bg-[#E55555]`}
           textStyles='min-w-26'
           title="QUIT"
           onPress={() => handleClick('QUIT')}
           isDisabled={handleDisabledSpecial()}
-        />
+        />}
       </View>
     </View>
   )

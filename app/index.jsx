@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '../components/CustomButton';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -72,8 +72,8 @@ const App = () => {
         <View className="w-full h-full flex flex-col justify-center items-center">
           <View className="w-full space-y-4">
             <Text className="text-3xl text-white font-pregular">Log In to Home App</Text>
-            {/* <Text className="text-white pt-2">Username</Text>
-            <TextInput
+            {/* <Text className="text-white pt-2">Username</Text> */}
+            {/* <TextInput
               className="bg-lime w-full p-4 rounded-xl font-pregular"
               placeholder='Username'
               autoFocus
@@ -91,6 +91,7 @@ const App = () => {
               onChangeText={(e) => setPassword(e)}
               onSubmitEditing={handleSubmit}
               autoComplete='password'
+              textContentType='password'
             /> */}
             <CustomButton title='Login' containerStyle="w-full mt-6" isLoading={isLoading} onPress={handleSubmit} />
             <Text className="text-red text-xl text-center font-bold">{err}</Text>

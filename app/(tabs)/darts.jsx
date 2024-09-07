@@ -14,10 +14,10 @@ const Darts = () => {
 
     const gameResponse = await getDartsGame(gameCode);
 
-    if (gameResponse) {
+    if (!gameResponse.message) {
       router.replace({ pathname: '/dartsgame', params: { game: JSON.stringify(gameResponse) } });
     } else {
-      Alert.alert("Game code is wrong.")
+      Alert.alert(gameResponse.message)
     }
 
     setIsLoading(false);
@@ -38,6 +38,7 @@ const Darts = () => {
               onChangeText={(e) => setGameCode(e)}
               returnKeyType='done'
               onSubmitEditing={handleJoinDartsGame}
+              maxLength={4}
             />
             <CustomButton title="Join game" onPress={handleJoinDartsGame} isLoading={isLoading} isDisabled={gameCode === ''} />
           </View>
