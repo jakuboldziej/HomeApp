@@ -2,21 +2,20 @@ import { View, Text, ScrollView, TextInput, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import CustomButton from '../../components/CustomButton'
-import { socket } from '../../lib/socketio'
-import { joinLiveGamePreview } from '../../lib/fetch'
 import { router } from 'expo-router'
+import { getDartsGame } from '../../lib/fetch'
 
 const Darts = () => {
-  const [gameCode, setGameCode] = useState('1988');
+  const [gameCode, setGameCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleJoinDartsGame = async () => {
     setIsLoading(true);
 
-    const response = await joinLiveGamePreview(gameCode);
+    const gameResponse = await getDartsGame(gameCode);
 
-    if (response.ok) {
-      router.push({ pathname: '/dartskeyboard', params: { gameCode: JSON.stringify(response.game.gameCode) } });
+    if (gameResponse) {
+      router.replace({ pathname: '/dartsgame', params: { game: JSON.stringify(gameResponse) } });
     } else {
       Alert.alert("Game code is wrong.")
     }
@@ -33,7 +32,7 @@ const Darts = () => {
             <Text className="text-white text-xl font-psemibold">Control darts game with phone</Text>
             <Text className="text-white text-lg font-pregular">Enter game code</Text>
             <TextInput
-              className="bg-lime w-full p-4 rounded-xl font-pregular"
+              className="bg-lime w-24 text-center p-4 rounded-xl font-pregular"
               keyboardType='numeric'
               placeholder='1234'
               onChangeText={(e) => setGameCode(e)}

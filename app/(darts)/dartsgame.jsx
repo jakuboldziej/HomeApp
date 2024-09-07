@@ -6,10 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
 import { socket } from '../../lib/socketio'
 import { DartsGameContext } from '../../context/DartsGameContext'
+import GameKeyboard from '../../components/dartsGame/GameKeyboard'
 
-const inputTailwind = "bg-creamy rounded-[25px] m-0.5"
-
-const DartsKeyboard = () => {
+const DartsGame = () => {
   const params = useLocalSearchParams();
   const navigation = useNavigation();
 
@@ -18,11 +17,9 @@ const DartsKeyboard = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   const handleGameLeave = () => {
-    router.push("/darts")
+    router.replace("/darts")
+    socket.emit('leaveLiveGamePreview', JSON.stringify({ gameCode: game.gameCode }));
     setGame(null);
-    socket.emit('hostDisconnectedFromGame', JSON.stringify({
-      gameCode: game.gameCode
-    }));
   }
 
   useEffect(() => {
@@ -33,13 +30,20 @@ const DartsKeyboard = () => {
       }
     });
 
-    if (params.gameCode) socket.emit("joinLiveGamePreview", JSON.stringify({
-      gameCode: JSON.parse(params.gameCode)
+    const parsedGame = JSON.parse(params.game);
+    socket.emit("joinLiveGamePreview", JSON.stringify({
+      gameCode: parsedGame.gameCode
     }));
+
+    setGame(parsedGame);
   }, []);
 
   useEffect(() => {
     if (!game) return;
+
+    if (game.active === false) {
+      router.replace('(darts)/dartsgamemodal');
+    }
 
     setCurrentUser(game.users.find((user) => user.displayName === game.turn));
   }, [game]);
@@ -54,15 +58,12 @@ const DartsKeyboard = () => {
     </View>
   )
 
-  const numbers = [];
-  for (let i = 1; i <= 20; i++) numbers.push(<CustomButton key={i} title={i} textStyles='w-16' containerStyle={inputTailwind} onPress={() => console.log(i.toString())} />);
-
   return (
     <SafeAreaView className="h-full bg-black">
-      <View className="w-full h-full flex flex-col items-center justify-between">
+      <View className="w-full h-full flex flex-col items-center justify-evenly">
         <CustomButton title="Leave" textStyles="text-sm px-4" containerStyle="h-12 p-0 bg-red absolute top-2 right-2" onPress={() => handleGameLeave()} />
         <Text className="font-pregular text-white text-xl absolute top-2 left-2">Round: {game.round}</Text>
-        <View className="flex flex-col items-center mt-6">
+        <View className="flex flex-col items-center">
           <Text className="font-pregular text-white text-3xl">{currentUser.displayName}</Text>
           <Text className="font-pbold text-white text-2xl mt-2">{currentUser.points}</Text>
           <View className="flex flex-row w-44 justify-between mt-2">
@@ -80,24 +81,12 @@ const DartsKeyboard = () => {
             </View>
           </View>
         </View>
-        <View className="flex flex-col h-2/3 w-full items-center justify-evenly">
-          <View className="flex flex-row flex-wrap justify-center">
-            {numbers}
-            <CustomButton containerStyle={inputTailwind} textStyles='w-16' title="25" />
-            <CustomButton containerStyle={inputTailwind} textStyles='w-16' title="0" />
-          </View>
-          <View className="flex flex-row flex-wrap justify-center">
-            <CustomButton containerStyle={`${inputTailwind} bg-green`} textStyles='min-w-26' title="DOORS" />
-            <CustomButton containerStyle={`${inputTailwind} bg-[#ffd100]`} textStyles='min-w-26' title="DOUBLE" />
-            <CustomButton containerStyle={`${inputTailwind} bg-[#ff8a00]`} textStyles='min-w-26' title="TRIPLE" />
-            <CustomButton containerStyle={`${inputTailwind} bg-red`} textStyles='min-w-26' title="BACK" />
-            <CustomButton containerStyle={`${inputTailwind} bg-[#E55555]`} textStyles='min-w-26' title="END" />
-            <CustomButton containerStyle={`${inputTailwind} bg-[#E55555]`} textStyles='min-w-26' title="QUIT" />
-          </View>
+        <View>
+          <GameKeyboard />
         </View>
       </View>
     </SafeAreaView>
   )
 }
 
-export default DartsKeyboard
+export default DartsGame

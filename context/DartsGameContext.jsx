@@ -7,17 +7,15 @@ export const DartsGameProvider = ({ children }) => {
   const [game, setGame] = useState(null);
 
   useEffect(() => {
-
-    const updateLiveGameClient = (data) => {
+    const updateLiveGamePreviewClient = (data) => {
       const gameData = JSON.parse(data);
-      console.log(gameData);
       setGame(gameData);
     }
 
-    socket.on('updateLiveGameClient', updateLiveGameClient);
+    socket.on('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
 
     return () => {
-      socket.off('updateLiveGameClient', updateLiveGameClient);
+      socket.off('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
     }
   }, []);
 

@@ -35,7 +35,8 @@ const RootLayout = () => {
       }}>
         <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name='(darts)/dartskeyboard' options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name='(darts)/dartsgame' options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name='(darts)/dartsgamemodal' options={{ headerShown: false, gestureEnabled: false, presentation: 'modal' }} />
       </Stack>
       <StatusBar backgroundColor='#161622' style='light' />
     </ContextProviders>
