@@ -15,6 +15,7 @@ const DartsGame = () => {
   const { game, setGame } = useContext(DartsGameContext);
 
   const [currentUser, setCurrentUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleGameLeave = () => {
     router.replace("/darts")
@@ -36,10 +37,11 @@ const DartsGame = () => {
     }));
 
     setGame(parsedGame);
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    if (!game) return;
+    if (!game || isLoading) return;
 
     if (game.active === false) {
       router.replace('(darts)/dartsgamemodal');
@@ -48,7 +50,7 @@ const DartsGame = () => {
     setCurrentUser(game.users.find((user) => user.displayName === game.turn));
   }, [game]);
 
-  if (!currentUser || !game) return (
+  if (!currentUser) return (
     <View className="bg-black h-full items-center justify-center">
       <ActivityIndicator
         animating={true}
