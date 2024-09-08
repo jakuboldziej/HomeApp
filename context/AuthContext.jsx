@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }) => {
     router.replace("/")
     setUser(null);
     await SecureStore.deleteItemAsync("user");
-
     socket.disconnect();
   }
 

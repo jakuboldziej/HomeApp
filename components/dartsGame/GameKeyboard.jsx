@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import React, { useContext, useState } from 'react';
-import CustomButton from '../CustomButton';
+import CustomButton from '../Custom/CustomButton';
 import { DartsGameContext } from '../../context/DartsGameContext';
 import { socket } from '../../lib/socketio';
 

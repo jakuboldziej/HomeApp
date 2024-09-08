@@ -1,12 +1,13 @@
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomButton from '../components/CustomButton';
+import CustomButton from '../components/Custom/CustomButton';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Redirect, router } from 'expo-router';
+import { router } from 'expo-router';
 import { AuthContext } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import { getUser } from '../lib/fetch';
 import { socket } from '../lib/socketio';
+import { TextInput } from 'react-native-paper';
 
 const App = () => {
   const { setUser, login } = useContext(AuthContext);
@@ -19,25 +20,35 @@ const App = () => {
 
   const passwordInputRef = useRef(null);
 
-  const handleSubmit = async () => {
-    setIsLoading(true);
-
+  const handleLogin = async () => {
     try {
+      // if (!username) return setErr("Fill username");
+      // if (!password) return setErr("Fill password");
+
       // const response = await login(username, password);
       const response = await login("kubek", "Kubek6034#");
 
-      if (!response.token) {
-        setErr(response.message)
-        setIsLoading(false);
-        return;
-      }
+      if (!response.token) return setErr(response.message);
 
       router.replace('/home');
     } catch (err) {
       console.log(err.stack)
     }
+  }
 
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    await handleLogin();
     setIsLoading(false);
+  }
+
+  const handleInputError = (type) => {
+    if (!err) return;
+    const usernameErrors = ["Fill username", "User not found"];
+    const passwordErrors = ["Fill password", "Wrong password"];
+
+    if (usernameErrors.includes(err) && type === "username") return true;
+    if (passwordErrors.includes(err) && type === "password") return true;
   }
 
   useEffect(() => {
@@ -65,33 +76,35 @@ const App = () => {
     getSecureStore();
   }, []);
 
-
   return (
     <SafeAreaView className="h-full px-4 bg-black">
       <ScrollView contentContainerStyle={{ height: "100%" }} keyboardShouldPersistTaps='handled'>
         <View className="w-full h-full flex flex-col justify-center items-center">
           <View className="w-full space-y-4">
             <Text className="text-3xl text-white font-pregular">Log In to Home App</Text>
-            {/* <Text className="text-white pt-2">Username</Text> */}
             {/* <TextInput
-              className="bg-lime w-full p-4 rounded-xl font-pregular"
-              placeholder='Username'
+              label='Username'
               autoFocus
               onChangeText={(e) => setUsername(e)}
               returnKeyType='next'
               onSubmitEditing={() => passwordInputRef.current?.focus()}
               autoComplete='username'
+              error={handleInputError('username')}
+              autoCapitalize='none'
+              activeUnderlineColor='green'
+              className="bg-white"
             />
-            <Text className="text-white pt-2">Password</Text>
             <TextInput
               ref={passwordInputRef}
-              className="bg-lime w-full p-4 rounded-xl font-pregular"
-              placeholder='Password'
+              label='Password'
               secureTextEntry
               onChangeText={(e) => setPassword(e)}
               onSubmitEditing={handleSubmit}
               autoComplete='password'
               textContentType='password'
+              error={handleInputError('password')}
+              activeUnderlineColor='green'
+              className="bg-white"
             /> */}
             <CustomButton title='Login' containerStyle="w-full mt-6" isLoading={isLoading} onPress={handleSubmit} />
             <Text className="text-red text-xl text-center font-bold">{err}</Text>

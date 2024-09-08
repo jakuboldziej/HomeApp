@@ -1,14 +1,17 @@
 import { ActivityIndicator, Text, View } from 'react-native'
 import React, { useContext, useState } from 'react'
-import CustomButton from '../../components/CustomButton'
+import CustomButton from '../../components/Custom/CustomButton'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
 import { socket } from '../../lib/socketio'
 import { DartsGameContext } from '../../context/DartsGameContext'
 import GameKeyboard from '../../components/dartsGame/GameKeyboard'
+import GameSummary from '../../components/dartsGame/GameSummary'
+import { useKeepAwake } from 'expo-keep-awake'
 
 const DartsGame = () => {
+  useKeepAwake();
   const params = useLocalSearchParams();
   const navigation = useNavigation();
 
@@ -16,6 +19,11 @@ const DartsGame = () => {
 
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [visibleModal, setVisibleModal] = useState(false);
+
+  const showModal = () => setVisibleModal(true);
+  const hideModal = () => setVisibleModal(false);
 
   const handleGameLeave = () => {
     router.replace("/darts")
@@ -44,8 +52,9 @@ const DartsGame = () => {
     if (!game || isLoading) return;
 
     if (game.active === false) {
-      router.replace('(darts)/dartsgamemodal');
-    }
+      // router.replace('dartsgamemodal');
+      showModal();
+    } else hideModal();
 
     setCurrentUser(game.users.find((user) => user.displayName === game.turn));
   }, [game]);
@@ -63,7 +72,12 @@ const DartsGame = () => {
   return (
     <SafeAreaView className="h-full bg-black">
       <View className="w-full h-full flex flex-col items-center justify-evenly">
-        <CustomButton title="Leave" textStyles="text-sm px-4" containerStyle="h-12 p-0 bg-red absolute top-2 right-2" onPress={() => handleGameLeave()} />
+        <CustomButton
+          title="Leave"
+          textStyles="text-sm px-4"
+          containerStyle={`h-12 p-0 bg-red absolute top-2 right-2 ${visibleModal && 'hidden'}`}
+          onPress={() => handleGameLeave()}
+        />
         <Text className="font-pregular text-white text-xl absolute top-2 left-2">Round: {game.round}</Text>
         <View className="flex flex-col items-center">
           <Text className="font-pregular text-white text-3xl">{currentUser.displayName}</Text>
@@ -86,6 +100,7 @@ const DartsGame = () => {
         <View>
           <GameKeyboard />
         </View>
+        <GameSummary visibleModal={visibleModal} hideModal={hideModal} />
       </View>
     </SafeAreaView>
   )

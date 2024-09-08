@@ -1,71 +1,58 @@
-import { View, Text, KeyboardAvoidingView } from 'react-native'
-import React from 'react'
-import { Tabs } from 'expo-router'
-import { House, Target, User } from 'lucide-react-native'
-
-const TabIcon = ({ icon, name, focused }) => {
-  return (
-    <View className="flex items-center justify-center">
-      <View>{icon}</View>
-      <Text className={focused ? "font-psemibold text-green" : "font-pregular"}>
-        {name}
-      </Text>
-    </View>
-  )
-}
+import { Tabs } from 'expo-router';
+import { House, Package, PackageOpen, Target, User } from 'lucide-react-native';
+import CustomTabBar from '../../components/Custom/CustomTabBar';
 
 const TabsLayout = () => {
   return (
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
-        tabBarHideOnKeyboard: true
+        contentStyle: { backgroundColor: 'black' }
       }}
+      tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tabs.Screen
-        name='home'
+        name="home"
         options={{
           title: 'Home',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon
-              icon={<House color={focused ? 'green' : 'black'} size={22} />}
-              name="Home"
-              focused={focused}
-            />
-          )
+            <House color={focused ? 'green' : 'black'} size={22} />
+          ),
         }}
       />
       <Tabs.Screen
-        name='darts'
+        name="darts"
         options={{
           title: 'Darts',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon
-              icon={<Target color={focused ? 'green' : 'black'} size={22} />}
-              name="Darts"
-              focused={focused}
-            />
+            <Target color={focused ? 'green' : 'black'} size={22} />
           ),
         }}
       />
       <Tabs.Screen
-        name='user'
+        name="cloud"
+        options={{
+          title: 'Cloud',
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            focused ? <PackageOpen color="green" size={22} /> : <Package color="black" size={22} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="user"
         options={{
           title: 'User',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon
-              icon={<User color={focused ? 'green' : 'black'} size={22} />}
-              name="User"
-              focused={focused}
-            />
+            <User color={focused ? 'green' : 'black'} size={22} />
           ),
         }}
       />
     </Tabs>
-  )
-}
+  );
+};
 
-export default TabsLayout
+export default TabsLayout;

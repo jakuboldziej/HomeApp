@@ -1,13 +1,13 @@
 import { View, Text } from 'react-native'
+import { Modal, Portal } from 'react-native-paper';
 import { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useNavigation } from 'expo-router';
 import { socket } from '../../lib/socketio';
 import { useContext } from 'react';
 import { DartsGameContext } from '../../context/DartsGameContext';
-import CustomButton from '../../components/CustomButton';
+import CustomButton from '../../components/Custom/CustomButton';
 
-const DartsGameModal = () => {
+const GameSummary = ({ visibleModal, hideModal }) => {
   const { game, setGame } = useContext(DartsGameContext);
   const navigation = useNavigation();
 
@@ -44,7 +44,7 @@ const DartsGameModal = () => {
         gameCode: gameData.gameCode
       }));
 
-      router.replace({ pathname: '/dartsgame', params: { game: JSON.stringify(gameData) } });
+      hideModal();
     }
 
     const hostDisconnectedFromGameClient = () => {
@@ -61,24 +61,30 @@ const DartsGameModal = () => {
   }, []);
 
   return (
-    <SafeAreaView className="bg-black h-full">
-      <View className="w-full h-full flex flex-col items-center justify-center">
-        <CustomButton title="Leave" textStyles="text-sm px-4" containerStyle="h-12 p-0 bg-red absolute top-2 right-2" onPress={() => handleGameLeave()} />
-        <Text className="text-white font-pregular text-2xl">Game Summary</Text>
-        {game.podium[1] !== null ? (
-          <Text className='text-white font-pregular text-xl pt-5'>Results</Text>
-        ) : (
-          <Text className='text-red font-pregular text-xl pt-5 text-red-500'>This game was abandoned</Text>
-        )}
-        <View className='flex flex-col items-center mt-5 absolute bottom-2'>
-          <Text className='text-white font-pregular text-sm text-slate-400'>
-            {!isPlayAgainDisabled ? "Wait until host clicks play again button or" : "Host disconnected from the game"}
-          </Text>
-          <CustomButton containerStyle="mt-5 bg-white" onPress={() => handlePlayAgain()} isDisabled={isPlayAgainDisabled} title="Play again" />
+    <Portal>
+      <Modal
+        dismissable={false}
+        visible={visibleModal}
+        contentContainerStyle={{ backgroundColor: 'black', padding: 20, margin: 10, height: '90%', borderRadius: 20 }}
+      >
+        <View className="w-full h-full flex flex-col items-center justify-center">
+          <CustomButton title="Leave" textStyles="text-sm px-4" containerStyle="h-12 p-0 bg-red absolute top-2 right-2" onPress={() => handleGameLeave()} />
+          <Text className="text-white font-pregular text-2xl">Game Summary</Text>
+          {game.podium[1] !== null ? (
+            <Text className='text-white font-pregular text-xl pt-5'>Results</Text>
+          ) : (
+            <Text className='text-red font-pregular text-xl pt-5 text-red-500'>This game was abandoned</Text>
+          )}
+          <View className='flex flex-col items-center mt-5 absolute bottom-2'>
+            <Text className='text-white font-pregular text-sm text-slate-400'>
+              {!isPlayAgainDisabled ? "Wait until host clicks play again button or" : "Host disconnected from the game"}
+            </Text>
+            <CustomButton containerStyle="mt-5 bg-white" onPress={() => handlePlayAgain()} isDisabled={isPlayAgainDisabled} title="Play again" />
+          </View>
         </View>
-      </View>
-    </SafeAreaView >
+      </Modal>
+    </Portal>
   )
 }
 
-export default DartsGameModal
+export default GameSummary

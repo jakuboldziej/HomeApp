@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "usesIcloudStorage": true
     },
     "android": {
       "adaptiveIcon": {
@@ -33,7 +34,9 @@
     "owner": "jakuboldziej",
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-document-picker",
+      "expo-image-picker"
     ],
     "runtimeVersion": {
       "policy": "appVersion"
