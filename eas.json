@@ -9,22 +9,28 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "EXPO_BACKEND_URL": "https://8227-188-122-23-154.ngrok-free.app"
+        "EXPO_PUBLIC_BACKEND_URL": "https://oldziej.pl",
+        "EXPO_PUBLIC_BACKEND_URL_LOCAL": "https://d1fc-188-122-23-154.ngrok-free.app",
+        "EXPO_PUBLIC_SOCKETIO_URL_LOCAL": "http://192.168.1.115:3000"
       }
     },
     "preview": {
       "channel": "staging",
       "distribution": "internal",
       "env": {
-        "EXPO_BACKEND_URL": "https://oldziej.pl"
+        "EXPO_PUBLIC_BACKEND_URL": "https://oldziej.pl"
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {
       "env": {
-        "EXPO_BACKEND_URL": "https://oldziej.pl"
+        "EXPO_PUBLIC_BACKEND_URL": "https://oldziej.pl"
       },
       "android": {
-        "image": "latest"
+        "image": "latest",
+        "buildType": "apk"
       },
       "ios": {
         "image": "latest"

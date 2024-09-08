@@ -20,7 +20,6 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "usesCleartextTraffic": true,
       "package": "com.jakuboldziej.homeapp"
     },
     "web": {
