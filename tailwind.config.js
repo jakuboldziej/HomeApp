@@ -17,17 +17,12 @@ module.exports = {
         pextrabold: ["Poppins-ExtraBold", "sans-serif"],
         pblack: ["Poppins-Black", "sans-serif"],
       },
-    },
-    colors: {
-      'lime': '#b7eb34',
-      'green': '#00B524',
-      'pink': '#f50add',
-      'creamy': '#F3F0D2',
-      'black': '#000000',
-      'white': '#ffffff ',
-      'red': '#ff0000 ',
+      colors: {
+        'green': '#008000',
+        'creamy': '#F3F0D2',
+        'red': '#E00000'
+      },
     },
   },
   plugins: [],
 }
-

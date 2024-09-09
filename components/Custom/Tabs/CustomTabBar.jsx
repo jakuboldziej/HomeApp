@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Keyboard, Animated } from 'react-native';
+import { Keyboard, Animated } from 'react-native';
 import { TouchableRipple } from 'react-native-paper';
 import CustomTabIcon from './CustomTabIcon';
 

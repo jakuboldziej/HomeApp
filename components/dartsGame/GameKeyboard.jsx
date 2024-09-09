@@ -64,7 +64,7 @@ const GameKeyboard = () => {
       </View>
       <View className="flex flex-row flex-wrap justify-center pt-10">
         <CustomButton
-          containerStyle={`${inputTailwind} bg-green`}
+          containerStyle={`${inputTailwind} bg-[#00B524]`}
           textStyles='min-w-26'
           title="DOORS"
           onPress={() => handleClick('DOORS')}

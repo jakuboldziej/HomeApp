@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font'
 import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import ContextProviders from '../context/ContextProviders';
+import * as SystemUI from 'expo-system-ui';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,20 +29,21 @@ const RootLayout = () => {
 
   if (!fontsLoaded && !error) return null;
 
+  SystemUI.setBackgroundColorAsync("black");
+
   return (
     <ContextProviders>
       <Stack
         screenOptions={{
-          animation: 'slide_from_right',
-          contentStyle: { backgroundColor: 'black' }
+          animation: 'default',
+          contentStyle: { backgroundColor: 'black' },
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name='(darts)/dartsgame' options={{ headerShown: false, gestureEnabled: false }} />
-        {/* <Stack.Screen name='(darts)/dartsgamemodal' options={{ headerShown: false, gestureEnabled: false }} /> */}
       </Stack>
-      <StatusBar backgroundColor='#161622' style='light' />
+      <StatusBar style='dark' />
     </ContextProviders>
   )
 }

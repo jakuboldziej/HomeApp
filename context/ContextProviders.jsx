@@ -12,6 +12,7 @@ function ContextProviders({ children }) {
       ...theme.colors,
       onSurfaceDisabled: '#b6b8ba',
       surfaceDisabled: 'gray',
+      primaryContainer: 'pink',
     },
   };
   return (

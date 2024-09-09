@@ -2,19 +2,16 @@ import React, { useEffect, useRef } from 'react';
 import { View, Animated } from 'react-native';
 
 const CustomTabIcon = ({ icon, name, focused }) => {
-  // Animated value for opacity and scale
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
 
-  // Run animation when `focused` changes
   useEffect(() => {
     if (focused) {
-      // Animate opacity to 1 and scale to 1 when focused
       Animated.parallel([
         Animated.timing(opacity, {
           toValue: 1,
           duration: 300,
-          useNativeDriver: true, // Optimizes performance
+          useNativeDriver: true,
         }),
         Animated.spring(scale, {
           toValue: 1,
@@ -23,7 +20,6 @@ const CustomTabIcon = ({ icon, name, focused }) => {
         }),
       ]).start();
     } else {
-      // Animate opacity back to 0 and scale to 0.8 when not focused
       Animated.parallel([
         Animated.timing(opacity, {
           toValue: 0,
@@ -45,8 +41,8 @@ const CustomTabIcon = ({ icon, name, focused }) => {
       {focused && (
         <Animated.Text
           style={{
-            opacity, // Animated opacity
-            transform: [{ scale }], // Animated scale
+            opacity,
+            transform: [{ scale }],
           }}
           className="font-psemibold text-green"
         >

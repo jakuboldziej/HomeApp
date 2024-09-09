@@ -73,10 +73,10 @@ const GameSummary = ({ visibleModal, hideModal }) => {
           {game.podium[1] !== null ? (
             <Text className='text-white font-pregular text-xl pt-5'>Results</Text>
           ) : (
-            <Text className='text-red font-pregular text-xl pt-5 text-red-500'>This game was abandoned</Text>
+            <Text className='text-red font-pregular text-xl pt-5'>This game was abandoned</Text>
           )}
           <View className='flex flex-col items-center mt-5 absolute bottom-2'>
-            <Text className='text-white font-pregular text-sm text-slate-400'>
+            <Text className='font-pregular text-sm text-slate-400'>
               {!isPlayAgainDisabled ? "Wait until host clicks play again button or" : "Host disconnected from the game"}
             </Text>
             <CustomButton containerStyle="mt-5 bg-white" onPress={() => handlePlayAgain()} isDisabled={isPlayAgainDisabled} title="Play again" />

@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 import { ActivityIndicator, TouchableRipple } from "react-native-paper";
 
 const CustomButton = ({
@@ -12,7 +12,7 @@ const CustomButton = ({
   return (
     <TouchableRipple
       onPress={onPress}
-      className={`bg-green rounded-xl h-16 px-4 flex flex-row justify-center items-center ${containerStyle} ${isLoading || isDisabled ? "opacity-60" : ""
+      className={`bg-lime-500 rounded-xl h-16 px-4 flex flex-row justify-center items-center ${containerStyle} ${isLoading || isDisabled ? "opacity-60" : ""
         }`}
       disabled={isLoading || isDisabled}
     >

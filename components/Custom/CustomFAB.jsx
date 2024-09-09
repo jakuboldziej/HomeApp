@@ -50,7 +50,7 @@ const CustomFAB = ({ handleNew, handleCreateFolder }) => {
             icon: 'file',
             label: 'File',
             onPress: () => handleNew('file'),
-            labelTextColor: 'white'
+            labelTextColor: 'white',
           },
           {
             icon: 'image',

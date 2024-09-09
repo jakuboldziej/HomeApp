@@ -36,7 +36,7 @@ const Darts = () => {
             <Text className="text-white text-xl font-psemibold">Control darts game with phone</Text>
             <Text className="text-white text-lg font-pregular">Enter game code</Text>
             <TextInput
-              className="bg-lime w-24 h-16 text-center font-pregular rounded-xl"
+              className="bg-creamy w-24 h-16 text-center font-pregular rounded-xl"
               keyboardType='numeric'
               placeholder='1234'
               onChangeText={(e) => setGameCode(e)}

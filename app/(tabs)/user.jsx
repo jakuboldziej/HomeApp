@@ -21,7 +21,7 @@ const User = () => {
         <View className="w-full h-full flex items-center justify-between p-4">
           <Text className="text-white text-3xl font-psemibold">User</Text>
           <Text className="text-white pt-24 text-xl">{user.displayName}</Text>
-          <CustomButton title="logout" containerStyle="bg-red" isLoading={isLoading} onPress={handleLogout} />
+          <CustomButton title="logout" containerStyle="bg-red-600" isLoading={isLoading} onPress={handleLogout} />
         </View>
       </ScrollView>
     </SafeAreaView>
