@@ -9,6 +9,7 @@ import { DartsGameContext } from '../../context/DartsGameContext'
 import GameKeyboard from '../../components/dartsGame/GameKeyboard'
 import GameSummary from '../../components/dartsGame/GameSummary'
 import { useKeepAwake } from 'expo-keep-awake'
+import LoadingScreen from '../../components/LoadingScreen'
 
 const DartsGame = () => {
   useKeepAwake();
@@ -59,15 +60,7 @@ const DartsGame = () => {
     setCurrentUser(game.users.find((user) => user.displayName === game.turn));
   }, [game]);
 
-  if (!currentUser) return (
-    <View className="bg-black h-full items-center justify-center">
-      <ActivityIndicator
-        animating={true}
-        color="#fff"
-        size="large"
-      />
-    </View>
-  )
+  if (!currentUser) return <LoadingScreen />
 
   return (
     <SafeAreaView className="h-full bg-black">

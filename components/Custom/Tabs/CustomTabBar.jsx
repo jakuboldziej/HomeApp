@@ -1,37 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, Keyboard, Animated } from 'react-native';
 import { TouchableRipple } from 'react-native-paper';
-
-const CustomTabIcon = ({ icon, name, focused }) => {
-  return (
-    <View className="flex items-center justify-center">
-      <View>{icon}</View>
-      <Text className={focused ? "font-psemibold text-green" : "font-pregular"}>
-        {name}
-      </Text>
-    </View>
-  );
-};
+import CustomTabIcon from './CustomTabIcon';
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const translateY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-      setKeyboardVisible(true);
       Animated.timing(translateY, {
-        toValue: 100, // Move the tab bar down
-        duration: 300, // Duration of the animation
+        toValue: 65,
+        duration: 300,
         useNativeDriver: true,
-      }).start();
+      }).start(() => setKeyboardVisible(true));
     });
 
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardVisible(false);
+      setKeyboardVisible(false)
       Animated.timing(translateY, {
-        toValue: 0, // Move the tab bar back to its original position
-        duration: 300, // Duration of the animation
+        toValue: 0,
+        duration: 300,
         useNativeDriver: true,
       }).start();
     });
@@ -47,7 +36,9 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       style={{
         flexDirection: 'row',
         backgroundColor: 'white',
+        height: 65,
         transform: [{ translateY }],
+        display: keyboardVisible ? 'none' : 'flex'
       }}
     >
       {state.routes.map((route, index) => {

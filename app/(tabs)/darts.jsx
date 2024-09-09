@@ -1,20 +1,17 @@
-import { View, Text, ScrollView, Alert } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import CustomButton from '../../components/Custom/CustomButton'
 import { router } from 'expo-router'
 import { getDartsGame } from '../../lib/fetch'
 import { Snackbar, TextInput } from 'react-native-paper'
+import CustomSnackBar from '../../components/Custom/CustomSnackBar'
 
 const Darts = () => {
   const [gameCode, setGameCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const [visible, setVisible] = useState(false);
-
-  const showSnackBar = () => setVisible(true);
-
-  const onDismissSnackBar = () => setVisible(false);
+  const [visibleSnack, setVisibleSnack] = useState(false);
 
   const handleJoinDartsGame = async () => {
     setIsLoading(true);
@@ -24,8 +21,7 @@ const Darts = () => {
     if (!gameResponse.message) {
       router.replace({ pathname: '/dartsgame', params: { game: JSON.stringify(gameResponse) } });
     } else {
-      // Alert.alert(gameResponse.message);
-      showSnackBar();
+      setVisibleSnack(true)
     }
 
     setIsLoading(false);
@@ -53,15 +49,8 @@ const Darts = () => {
             />
             <CustomButton title="Join game" onPress={handleJoinDartsGame} isLoading={isLoading} isDisabled={gameCode === ''} />
           </View>
-          <Snackbar
-            visible={visible}
-            onDismiss={onDismissSnackBar}
-            duration={3000}
-            action={{
-              label: 'Hide',
-            }}>
-            Game Code is wrong.
-          </Snackbar>
+
+          <CustomSnackBar title="Game code is wrong" visible={visibleSnack} setVisible={setVisibleSnack} />
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -1,12 +1,13 @@
 import { Tabs } from 'expo-router';
 import { House, Package, PackageOpen, Target, User } from 'lucide-react-native';
-import CustomTabBar from '../../components/Custom/CustomTabBar';
+import CustomTabBar from '../../components/Custom/Tabs/CustomTabBar';
 
 const TabsLayout = () => {
   return (
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
+        tabBarStyle: { display: 'none' },
         contentStyle: { backgroundColor: 'black' }
       }}
       tabBar={(props) => <CustomTabBar {...props} />}
@@ -17,7 +18,7 @@ const TabsLayout = () => {
           title: 'Home',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <House color={focused ? 'green' : 'black'} size={22} />
+            <House color={focused ? 'green' : 'black'} size={30} />
           ),
         }}
       />
@@ -27,7 +28,7 @@ const TabsLayout = () => {
           title: 'Darts',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <Target color={focused ? 'green' : 'black'} size={22} />
+            <Target color={focused ? 'green' : 'black'} size={30} />
           ),
         }}
       />
@@ -37,7 +38,7 @@ const TabsLayout = () => {
           title: 'Cloud',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            focused ? <PackageOpen color="green" size={22} /> : <Package color="black" size={22} />
+            focused ? <PackageOpen color="green" size={30} /> : <Package color="black" size={30} />
           ),
         }}
       />
@@ -47,7 +48,7 @@ const TabsLayout = () => {
           title: 'User',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <User color={focused ? 'green' : 'black'} size={22} />
+            <User color={focused ? 'green' : 'black'} size={30} />
           ),
         }}
       />
