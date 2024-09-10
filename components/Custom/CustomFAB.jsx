@@ -42,7 +42,7 @@ const CustomFAB = ({ handleNew, handleCreateFolder }) => {
       <FAB.Group
         open={openedFAB}
         visible={!keyboardVisible}
-        backdropColor='transparent'
+        backdropColor='rgba(0, 0, 0, 0.74)'
         icon={openedFAB ? 'close' : 'plus'}
         label={openedFAB ? '' : 'New'}
         actions={[

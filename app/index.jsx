@@ -30,9 +30,11 @@ const App = () => {
       // if (!password) return setErr("Fill password");
 
       // const response = await login(username, password);
-      const response = await login("kubek", "Kubek6034#");
+      const response = await getUser("kubek");
+      setUser(response);
 
-      if (!response.token) return setErr(response.message);
+      // if (!response.token) return setErr(response.message);
+
 
       router.replace('/home');
     } catch (err) {

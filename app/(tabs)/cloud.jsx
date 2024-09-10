@@ -1,15 +1,15 @@
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import CustomFAB from '../../components/Custom/CustomFAB';
-import CollapsibleFileTree from '../../components/Custom/CollapsibleFileTree';
-import { getCloudUser, getFolder, getFolders } from '../../lib/fetch';
+import { getCloudUser, getFolder } from '../../lib/fetch';
 import { AuthContext } from '../../context/AuthContext';
 import { handleDataShown } from '../../lib/utils';
-import { EllipsisVertical, File, Folder } from 'lucide-react-native';
-import { IconButton } from 'react-native-paper';
+import FileNode from '../../components/Custom/Cloud/FileNode';
+import FolderNode from '../../components/Custom/Cloud/FolderNode';
+import LoadingScreen from '../../components/LoadingScreen'
 
 const Cloud = () => {
   const { user } = useContext(AuthContext);
@@ -66,22 +66,21 @@ const Cloud = () => {
   return (
     <SafeAreaView className="h-full bg-black">
       <ScrollView contentContainerStyle={{ flex: 1 }}>
-        <View className="w-full h-full flex items-center p-4">
+        <View className="w-full h-full flex items-center">
           <Text className="text-white text-3xl font-psemibold pt-4">Cloud</Text>
-
           <View className="w-full flex-1 flex">
-            {dataShown && dataShown.map((data) => (
-              <View key={data._id} className="flex flex-row items-center justify-between my-2">
-                <View className="flex-row items-center max-w-[92%]">
-                  {data.type === "folder" ? <Folder color="white" size={25} /> : <File color="white" size={25} />}
-                  <Text className="text-white ml-2 font-pregular text-base max-w-10">{data.type === "folder" ? data.name : data.filename}</Text>
+            {dataShown === null ? (
+              <LoadingScreen text="Loading files..." />
+            ) : dataShown.length > 0 ? (
+              dataShown.map((data) => (
+                <View key={data._id}>
+                  {data.type === "folder" ? <FolderNode folder={data} /> : <FileNode file={data} />}
                 </View>
-                <IconButton icon="dots-vertical" iconColor='white' size={25} />
-              </View>
-            ))}
+              ))
+            ) : (
+              <Text className="text-center text-2xl text-gray-500 mt-12">No files...</Text>
+            )}
           </View>
-
-          {/* <CollapsibleFileTree /> */}
           <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
         </View>
       </ScrollView>

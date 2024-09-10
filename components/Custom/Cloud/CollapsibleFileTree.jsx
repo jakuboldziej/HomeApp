@@ -29,19 +29,19 @@ const fileTree = [
 
 const FileTreeNode = ({ node }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity 0
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const handlePress = () => {
     if (node.type === 'folder') {
       if (!isExpanded) {
         Animated.timing(fadeAnim, {
-          toValue: 1, // Fade in
+          toValue: 1,
           duration: 300,
-          useNativeDriver: true, // Opacity animation can use native driver
+          useNativeDriver: true,
         }).start();
       } else {
         Animated.timing(fadeAnim, {
-          toValue: 0, // Fade out
+          toValue: 0,
           duration: 300,
           useNativeDriver: true,
         }).start();
@@ -52,7 +52,7 @@ const FileTreeNode = ({ node }) => {
 
   useEffect(() => {
     if (!isExpanded) {
-      fadeAnim.setValue(0); // Reset opacity to 0 when collapsed
+      fadeAnim.setValue(0);
     }
   }, [isExpanded, fadeAnim]);
 

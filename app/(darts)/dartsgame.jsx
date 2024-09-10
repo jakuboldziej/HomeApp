@@ -60,7 +60,7 @@ const DartsGame = () => {
     setCurrentUser(game.users.find((user) => user.displayName === game.turn));
   }, [game]);
 
-  if (!currentUser) return <LoadingScreen />
+  if (!currentUser) return <LoadingScreen text="Loading game..." />
 
   return (
     <SafeAreaView className="h-full bg-black">
