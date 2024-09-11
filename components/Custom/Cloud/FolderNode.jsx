@@ -1,13 +1,11 @@
 import { View, Text } from 'react-native'
 import { Folder } from 'lucide-react-native'
 import { IconButton, TouchableRipple } from 'react-native-paper'
-import { router, useNavigation } from 'expo-router'
+import { router } from 'expo-router'
 
 const FolderNode = ({ folder }) => {
-  // const navigation = useNavigation();
   const redirectToFolder = () => {
-    // navigation.setParams({ headerTitle: folder.name });
-    router.replace({ pathname: `(cloud)/${folder._id}` });
+    router.push({ pathname: `(cloud)/${folder._id}`, params: { title: folder.name } });
   }
 
   return (
