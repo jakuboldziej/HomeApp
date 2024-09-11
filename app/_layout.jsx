@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import ContextProviders from '../context/ContextProviders';
 import * as SystemUI from 'expo-system-ui';
+import { Button } from 'react-native-paper';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -42,6 +43,11 @@ const RootLayout = () => {
         <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name='(darts)/dartsgame' options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name='(cloud)/[_id]' options={({ route }) => ({
+          headerShown: true,
+          gestureEnabled: true,
+          title: route.params.headerTitle
+        })} />
       </Stack>
       <StatusBar style='dark' />
     </ContextProviders>

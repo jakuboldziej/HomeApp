@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import CustomButton from '../../components/Custom/CustomButton'
 import { router } from 'expo-router'
 import { getDartsGame } from '../../lib/fetch'
-import { Snackbar, TextInput } from 'react-native-paper'
+import { TextInput } from 'react-native-paper'
 import CustomSnackBar from '../../components/Custom/CustomSnackBar'
 
 const Darts = () => {
@@ -19,7 +19,7 @@ const Darts = () => {
     const gameResponse = await getDartsGame(gameCode);
 
     if (!gameResponse.message) {
-      router.replace({ pathname: '/dartsgame', params: { game: JSON.stringify(gameResponse) } });
+      router.replace({ pathname: '(darts)/dartsgame', params: { game: JSON.stringify(gameResponse) } });
     } else {
       setVisibleSnack(true)
     }
