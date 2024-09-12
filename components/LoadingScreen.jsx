@@ -1,6 +1,7 @@
-import { View, Image, Text } from 'react-native'
+import { View, Text } from 'react-native'
 import React from 'react'
 import { ActivityIndicator } from 'react-native-paper'
+import { Image } from 'expo-image'
 
 const LoadingScreen = ({ text }) => {
   return (

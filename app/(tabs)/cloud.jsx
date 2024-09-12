@@ -7,8 +7,8 @@ import CustomFAB from '../../components/Custom/CustomFAB';
 import { getCloudUser, getFolder } from '../../lib/fetch';
 import { AuthContext } from '../../context/AuthContext';
 import { handleDataShown } from '../../lib/utils';
-import FileNode from '../../components/Custom/Cloud/FileNode';
-import FolderNode from '../../components/Custom/Cloud/FolderNode';
+import FileNode from '../../components/Cloud/Nodes/FileNode';
+import FolderNode from '../../components/Cloud/Nodes/FolderNode';
 import LoadingScreen from '../../components/LoadingScreen'
 
 const Cloud = () => {

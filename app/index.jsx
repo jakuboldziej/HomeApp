@@ -1,4 +1,4 @@
-import { Image, Keyboard, ScrollView, Text, View } from 'react-native';
+import { Keyboard, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '../components/Custom/CustomButton';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -8,7 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import { getUser } from '../lib/fetch';
 import { socket } from '../lib/socketio';
 import { HelperText, TextInput } from 'react-native-paper';
-import { Eye } from 'lucide-react-native';
+import { Image } from 'expo-image';
 
 const App = () => {
   const { setUser, login } = useContext(AuthContext);
