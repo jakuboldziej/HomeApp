@@ -4,7 +4,6 @@ import { Image } from 'expo-image';
 import { Zoomable } from '@likashefqet/react-native-image-zoom';
 import React, { useRef } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
-import { printAsync } from 'expo-print';
 
 const FileScreen = ({ file }) => {
   const fileSource = `${apiUrl}/ftp/files/render/${file.filename}`;
@@ -37,10 +36,7 @@ const FileScreen = ({ file }) => {
         </Zoomable>
       )
     } else if (file.contentType.split("/")[1] === "pdf") {
-      const render = printAsync({
-        html: fileSource
-      })
-      return render;
+      console.log(fileSource)
     }
   }
 
