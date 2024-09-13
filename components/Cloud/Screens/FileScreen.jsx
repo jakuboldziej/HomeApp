@@ -1,9 +1,10 @@
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { apiUrl } from '../../../lib/fetch';
 import { Image } from 'expo-image';
 import { Zoomable } from '@likashefqet/react-native-image-zoom';
 import React, { useRef } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
+import CustomButton from '../../Custom/CustomButton';
 
 const FileScreen = ({ file }) => {
   const fileSource = `${apiUrl}/ftp/files/render/${file.filename}`;
@@ -36,7 +37,17 @@ const FileScreen = ({ file }) => {
         </Zoomable>
       )
     } else if (file.contentType.split("/")[1] === "pdf") {
-      console.log(fileSource)
+      return (
+        <View className="flex-1 items-center justify-center">
+          <CustomButton onPress={() => Linking.openURL(fileSource)} title="Download File" />
+        </View>
+      )
+    } else {
+      return (
+        <View className="flex-1 items-center justify-center">
+          <CustomButton onPress={() => Linking.openURL(fileSource)} title="Download File" />
+        </View>
+      )
     }
   }
 

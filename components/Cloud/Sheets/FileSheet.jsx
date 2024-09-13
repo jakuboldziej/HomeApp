@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, forwardRef, useRef, useImperativeHandle } from 'react';
 import { View, Text } from 'react-native';
 import { Divider, TouchableRipple } from 'react-native-paper';
-import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { File, FolderInput, Info, Link2, PencilLine, Trash2, UserPlus } from 'lucide-react-native';
 
@@ -37,7 +37,7 @@ const FileSheet = forwardRef(({ file }, ref) => {
       backgroundStyle={{ backgroundColor: 'pink' }}
       backdropComponent={renderBackdrop}
     >
-      <BottomSheetView className="flex-1">
+      <BottomSheetScrollView className="flex-1 w-full h-full">
         <View className="p-4 flex-row gap-2 items-center">
           <File size={20} color="black" />
           <Text numberOfLines={1} className="text-xl font-pregular">{file.filename}</Text>
@@ -82,7 +82,7 @@ const FileSheet = forwardRef(({ file }, ref) => {
             <Text className="text-xl font-pregular">Delete</Text>
           </View>
         </TouchableRipple>
-      </BottomSheetView>
+      </BottomSheetScrollView>
     </BottomSheetModal>
   );
 });
