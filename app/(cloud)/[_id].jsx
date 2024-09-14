@@ -5,7 +5,7 @@ import React, { useRef, useCallback } from 'react';
 import FolderSheet from '../../components/Cloud/Sheets/FolderSheet';
 import FileSheet from '../../components/Cloud/Sheets/FileSheet';
 import FileScreen from '../../components/Cloud/Screens/FileScreen';
-import FolderScreen from '../../components/Cloud/Screens/FolderScreen';
+import FolderScreen from './folder';
 
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 

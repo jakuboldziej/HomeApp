@@ -38,7 +38,6 @@ const FolderSheet = forwardRef(({ folder }, ref) => {
       backdropComponent={renderBackdrop}
     >
       <BottomSheetScrollView className="flex-1 w-full h-full">
-
         <View className="p-4 flex-row gap-2 items-center">
           <Folder size={20} color="black" />
           <Text numberOfLines={1} className="text-xl font-pregular">{folder.name}</Text>
