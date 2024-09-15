@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Platform } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import React, { useRef, useCallback } from 'react';
 import FolderSheet from '../../components/Cloud/Sheets/FolderSheet';

@@ -19,7 +19,7 @@ const User = () => {
     <SafeAreaView className="h-full bg-black">
       <ScrollView contentContainerStyle={{ height: "100%" }}>
         <View className="w-full h-full flex items-center justify-between p-4">
-          <Text className="text-white text-3xl font-psemibold">User</Text>
+          <Text className="text-white text-3xl font-psemibold pt-4">User</Text>
           <Text className="text-white pt-24 text-xl">{user.displayName}</Text>
           <CustomButton title="logout" containerStyle="bg-red-600" isLoading={isLoading} onPress={handleLogout} />
         </View>
