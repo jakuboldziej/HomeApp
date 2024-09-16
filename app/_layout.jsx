@@ -42,7 +42,6 @@ const RootLayout = () => {
         <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name='(darts)/dartsgame' options={{ headerShown: false, gestureEnabled: false }} />
-        <Stack.Screen name='(cloud)/[_id]' options={{ headerShown: false, gestureEnabled: true }} />
       </Stack>
       <StatusBar style='dark' />
     </Providers>

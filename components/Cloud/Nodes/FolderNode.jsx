@@ -7,7 +7,7 @@ import FolderSheet from '../Sheets/FolderSheet';
 
 const FolderNode = ({ folder }) => {
   const redirectToFolder = () => {
-    router.push({ pathname: `(cloud)/${folder._id}`, params: { folder: JSON.stringify(folder) } });
+    router.push({ pathname: `cloud/${folder._id}`, params: { folder: JSON.stringify(folder) } });
   }
 
   const bottomSheetModalRef = useRef(null);

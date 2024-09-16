@@ -7,7 +7,7 @@ import FileSheet from '../Sheets/FileSheet';
 
 const FileNode = ({ file }) => {
   const redirectToFolder = () => {
-    router.push({ pathname: `(cloud)/${file._id}`, params: { file: JSON.stringify(file) } });
+    router.push({ pathname: `cloud/${file._id}`, params: { file: JSON.stringify(file) } });
   }
 
   const bottomSheetModalRef = useRef(null);

@@ -1,19 +1,21 @@
-import { ScrollView, Text, View } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import { Platform, ScrollView, Text, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
-import CustomFAB from '../../components/Custom/CustomFAB';
-import { getCloudUser, getFolder } from '../../lib/fetch';
-import { AuthContext } from '../../context/AuthContext';
-import { handleDataShown } from '../../lib/utils';
-import FolderScreen from '../(cloud)/folder';
+import CustomFAB from '../../../components/Custom/CustomFAB';
+import { Appbar, Searchbar } from 'react-native-paper';
+import { router } from 'expo-router';
+import LoadingScreen from '../../../components/LoadingScreen';
+import { CloudContext, CloudProvider } from '../../../context/CloudContext';
+import FolderScreen from './folder';
+
+const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
 const Cloud = () => {
-  const { user } = useContext(AuthContext);
+  const { folder, cloudLoading } = useContext(CloudContext);
 
   const [selectedDocument, setSelectedDocument] = useState(null);
-  const [cloudUserMainFolderId, setCloudUserMainFolderId] = useState(null);
 
   const handleSelectFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({});
@@ -50,23 +52,15 @@ const Cloud = () => {
     }
   }
 
-  const fetchCloudFiles = async () => {
-    const cloudUser = await getCloudUser(user.displayName);
-    setCloudUserMainFolderId(cloudUser.main_folder);
-  }
-
-  useEffect(() => {
-    if (user) fetchCloudFiles();
-  }, [user]);
-
   return (
     <SafeAreaView className="h-full bg-black">
       <ScrollView contentContainerStyle={{ flex: 1 }}>
         <View className="w-full h-full flex items-center">
-          <Text className="text-white text-3xl font-psemibold pt-8">Cloud</Text>
-
-          {cloudUserMainFolderId && <FolderScreen folderId={cloudUserMainFolderId} />}
-
+          {cloudLoading === true ? (
+            <LoadingScreen text="Loading files..." />
+          ) : (
+            <FolderScreen folder={folder} />
+          )}
           <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
         </View>
       </ScrollView>
@@ -74,4 +68,10 @@ const Cloud = () => {
   )
 }
 
-export default Cloud
+export default CloudWrapper = () => {
+  return (
+    <CloudProvider>
+      <Cloud />
+    </CloudProvider>
+  )
+}

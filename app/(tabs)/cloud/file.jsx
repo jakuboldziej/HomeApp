@@ -4,15 +4,22 @@ import { Image } from 'expo-image';
 import { Zoomable } from '@likashefqet/react-native-image-zoom';
 import React, { useRef } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
-import CustomButton from '../../Custom/CustomButton';
+import CustomButton from '../../../components/Custom/CustomButton';
+import { useLocalSearchParams } from 'expo-router';
+import FileSheet from '../../../components/Cloud/Sheets/FileSheet';
 
-const FileScreen = ({ file }) => {
+const FileScreen = () => {
+  const { file: fileParam } = useLocalSearchParams();
+  const file = JSON.parse(fileParam);
+
   const fileSource = `${apiUrl}/ftp/files/render/${file.filename}`;
 
   const ref = useRef(null);
   const scale = useSharedValue(1);
   const minScale = 1;
   const maxScale = 5;
+
+  const bottomSheetModalRef = useRef(null);
 
   const handleRenderFileType = () => {
     if (file.contentType.split("/")[0] === "image") {
@@ -52,9 +59,13 @@ const FileScreen = ({ file }) => {
   }
 
   return (
-    <View className="flex-1">
-      {handleRenderFileType()}
-    </View>
+    <>
+      <View className="flex-1">
+        {handleRenderFileType()}
+      </View>
+
+      <FileSheet file={file} ref={bottomSheetModalRef} />
+    </>
   );
 };
 
