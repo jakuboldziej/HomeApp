@@ -8,7 +8,7 @@ export const CloudContext = createContext()
 export const CloudProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [folder, setFolder] = useState(null);
-  const [cloudLoading, setCloudLoading] = useState(true);
+  const [cloudLoading, setCloudLoading] = useState(false);
 
   const handleChangeFolder = async (folderId) => {
     setCloudLoading(true);
@@ -19,11 +19,9 @@ export const CloudProvider = ({ children }) => {
   }
 
   const fetchCloudUserMainFolder = async () => {
-    setCloudLoading(true);
     const cloudUser = await getCloudUser(user.displayName);
     const fetchedFolder = await getFolder(cloudUser.main_folder);
     setFolder(fetchedFolder);
-    setCloudLoading(false);
   }
 
   useEffect(() => {

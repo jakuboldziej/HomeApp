@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import FolderNode from '../../../components/Cloud/Nodes/FolderNode';
 import FileNode from '../../../components/Cloud/Nodes/FileNode';
@@ -13,7 +13,8 @@ const FolderScreen = ({ folder }) => {
 
   const handleFolderData = async () => {
     const updatedDataShown = await handleDataShown(folder);
-    setDataShown(updatedDataShown);
+    if (!updatedDataShown) setDataShown([]);
+    else setDataShown(updatedDataShown);
   }
 
   useEffect(() => {
@@ -21,19 +22,21 @@ const FolderScreen = ({ folder }) => {
   }, [user]);
 
   return (
-    <View className="w-full flex-1 flex">
-      {dataShown === null ? (
-        <LoadingScreen text="Loading files..." />
-      ) : dataShown.length > 0 ? (
-        dataShown.map((data) => (
-          <View key={data._id}>
-            {data.type === "folder" ? <FolderNode folder={data} /> : <FileNode file={data} />}
-          </View>
-        ))
-      ) : (
-        <Text className="text-center text-2xl text-gray-500 mt-12">No files...</Text>
-      )}
-    </View>
+    <ScrollView contentContainerStyle={{ flex: 1 }} className="mt-4">
+      <View className="w-full flex-1 flex bg-black">
+        {dataShown === null ? (
+          <LoadingScreen text="Loading files..." />
+        ) : dataShown.length > 0 ? (
+          dataShown.map((data) => (
+            <View key={data._id}>
+              {data.type === "folder" ? <FolderNode folder={data} /> : <FileNode file={data} />}
+            </View>
+          ))
+        ) : (
+          <Text className="text-center text-2xl text-gray-500 mt-12">No files...</Text>
+        )}
+      </View>
+    </ScrollView>
   )
 }
 

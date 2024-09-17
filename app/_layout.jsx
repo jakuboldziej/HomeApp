@@ -3,7 +3,7 @@ import { useFonts } from 'expo-font'
 import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import Providers from './Providers';
-import * as SystemUI from 'expo-system-ui';
+import { setBackgroundColorAsync } from 'expo-system-ui';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,7 +29,7 @@ const RootLayout = () => {
 
   if (!fontsLoaded && !error) return null;
 
-  SystemUI.setBackgroundColorAsync("black");
+  setBackgroundColorAsync("black");
 
   return (
     <Providers>
@@ -43,7 +43,7 @@ const RootLayout = () => {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name='(darts)/dartsgame' options={{ headerShown: false, gestureEnabled: false }} />
       </Stack>
-      <StatusBar style='dark' />
+      <StatusBar style='light' />
     </Providers>
   )
 }

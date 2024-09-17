@@ -1,9 +1,11 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import { CloudProvider } from '../../../context/CloudContext';
 import CustomHeader from '../../../components/Cloud/CustomHeader';
+import { setBackgroundColorAsync } from 'expo-system-ui';
 
 const Cloud = () => {
+  setBackgroundColorAsync("black");
+
   return (
     <Stack
       initialRouteName="index"
@@ -25,10 +27,4 @@ const Cloud = () => {
   )
 }
 
-export default CloudWrapper = () => {
-  return (
-    <CloudProvider>
-      <Cloud />
-    </CloudProvider>
-  )
-}
+export default Cloud

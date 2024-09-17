@@ -29,7 +29,7 @@ const Darts = () => {
 
   return (
     <SafeAreaView className="h-full bg-black">
-      <ScrollView contentContainerStyle={{ height: '100%' }} keyboardShouldPersistTaps='handled'>
+      <ScrollView contentContainerStyle={{ flex: 1 }} keyboardShouldPersistTaps='handled'>
         <View className="w-full h-full flex items-center p-4">
           <Text className="text-white text-3xl font-psemibold pt-4">Darts</Text>
           <View className="font-pbold border border-white rounded-xl h-64 p-4 mt-20 flex items-center justify-between">

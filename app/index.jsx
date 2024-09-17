@@ -96,7 +96,7 @@ const App = () => {
 
   return (
     <SafeAreaView className="h-full bg-black">
-      <ScrollView contentContainerStyle={{ height: "100%" }} keyboardShouldPersistTaps='handled'>
+      <ScrollView contentContainerStyle={{ flex: 1 }} keyboardShouldPersistTaps='handled'>
         <View className={`w-full h-full flex flex-col items-center px-4 ${keyboardVisible ? 'justify-end' : 'justify-center'}`}>
           <View className="w-full space-y-4">
             <View className="items-center">

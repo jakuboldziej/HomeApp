@@ -7,7 +7,6 @@ const TabsLayout = () => {
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
-        tabBarStyle: { display: 'none' },
         contentStyle: { backgroundColor: 'black' }
       }}
       tabBar={(props) => <CustomTabBar {...props} />}

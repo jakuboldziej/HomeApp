@@ -1,16 +1,12 @@
-import { Platform, ScrollView, Text, View } from 'react-native';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { ScrollView, View } from 'react-native';
+import React, { useContext, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import CustomFAB from '../../../components/Custom/CustomFAB';
-import { Appbar, Searchbar } from 'react-native-paper';
-import { router } from 'expo-router';
-import LoadingScreen from '../../../components/LoadingScreen';
 import { CloudContext, CloudProvider } from '../../../context/CloudContext';
 import FolderScreen from './folder';
-
-const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
+import { StatusBar } from 'expo-status-bar';
 
 const Cloud = () => {
   const { folder, cloudLoading } = useContext(CloudContext);
@@ -53,18 +49,14 @@ const Cloud = () => {
   }
 
   return (
-    <SafeAreaView className="h-full bg-black">
-      <ScrollView contentContainerStyle={{ flex: 1 }}>
-        <View className="w-full h-full flex items-center">
-          {cloudLoading === true ? (
-            <LoadingScreen text="Loading files..." />
-          ) : (
-            <FolderScreen folder={folder} />
-          )}
-          <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <ScrollView contentContainerStyle={{ flex: 1 }}>
+      <View className="w-full h-full bg-black flex items-center">
+        {folder && (
+          <FolderScreen folder={folder} />
+        )}
+        <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
+      </View>
+    </ScrollView>
   )
 }
 
