@@ -32,7 +32,7 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="cloud"
+        name="(drawer)"
         options={{
           title: 'Cloud',
           headerShown: false,

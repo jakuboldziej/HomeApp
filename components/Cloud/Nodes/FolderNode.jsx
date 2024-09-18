@@ -7,7 +7,7 @@ import FolderSheet from '../Sheets/FolderSheet';
 
 const FolderNode = ({ folder }) => {
   const redirectToFolder = () => {
-    router.push({ pathname: `cloud/${folder._id}`, params: { folder: JSON.stringify(folder) } });
+    router.push({ pathname: `/cloud/${folder.name}`, params: { folder: JSON.stringify(folder) } });
   }
 
   const bottomSheetModalRef = useRef(null);
@@ -19,7 +19,7 @@ const FolderNode = ({ folder }) => {
   return (
     <>
       <TouchableRipple onPress={() => redirectToFolder()} rippleColor="rgba(255, 255, 255, 0.3)">
-        <View className="flex-row items-center w-full justify-between p-2">
+        <View className="flex-row items-center w-full justify-between p-2 pl-4">
           <View className="flex flex-row items-center">
             <Folder color="white" size={25} />
             <Text numberOfLines={1} className="text-white ml-2 font-pregular text-base max-w-10">{folder.name}</Text>

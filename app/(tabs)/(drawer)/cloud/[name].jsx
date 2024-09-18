@@ -1,13 +1,13 @@
 import { useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import React, { useRef } from 'react';
-import FolderSheet from '../../../components/Cloud/Sheets/FolderSheet';
-import FileSheet from '../../../components/Cloud/Sheets/FileSheet';
+import FolderSheet from '../../../../components/Cloud/Sheets/FolderSheet';
+import FileSheet from '../../../../components/Cloud/Sheets/FileSheet';
 import FileScreen from './file';
 import FolderScreen from './folder';
 
 export default function DocumentScreen() {
-  const { _id, folder, file } = useLocalSearchParams();
+  const { name, folder, file } = useLocalSearchParams();
 
   const parsedFile = file && JSON.parse(file);
   const parsedFolder = folder && JSON.parse(folder);

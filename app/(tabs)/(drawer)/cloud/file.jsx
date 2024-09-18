@@ -1,12 +1,12 @@
 import { Linking, View } from 'react-native';
-import { apiUrl } from '../../../lib/fetch';
+import { apiUrl } from '../../../../lib/fetch';
 import { Image } from 'expo-image';
 import { Zoomable } from '@likashefqet/react-native-image-zoom';
 import React, { useRef } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
-import CustomButton from '../../../components/Custom/CustomButton';
+import CustomButton from '../../../../components/Custom/CustomButton';
 import { useLocalSearchParams } from 'expo-router';
-import FileSheet from '../../../components/Cloud/Sheets/FileSheet';
+import FileSheet from '../../../../components/Cloud/Sheets/FileSheet';
 
 const FileScreen = () => {
   const { file: fileParam } = useLocalSearchParams();

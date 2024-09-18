@@ -1,10 +1,10 @@
 import { View, Text, ScrollView } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
-import FolderNode from '../../../components/Cloud/Nodes/FolderNode';
-import FileNode from '../../../components/Cloud/Nodes/FileNode';
-import LoadingScreen from '../../../components/LoadingScreen';
-import { AuthContext } from '../../../context/AuthContext';
-import { handleDataShown } from '../../../lib/utils';
+import FolderNode from '../../../../components/Cloud/Nodes/FolderNode';
+import FileNode from '../../../../components/Cloud/Nodes/FileNode';
+import LoadingScreen from '../../../../components/LoadingScreen';
+import { AuthContext } from '../../../../context/AuthContext';
+import { handleDataShown } from '../../../../lib/utils';
 
 const FolderScreen = ({ folder }) => {
   const { user } = useContext(AuthContext);
@@ -22,7 +22,7 @@ const FolderScreen = ({ folder }) => {
   }, [user]);
 
   return (
-    <ScrollView contentContainerStyle={{ flex: 1 }} className="mt-4">
+    <ScrollView contentContainerStyle={{ flex: 1 }}>
       <View className="w-full flex-1 flex bg-black">
         {dataShown === null ? (
           <LoadingScreen text="Loading files..." />

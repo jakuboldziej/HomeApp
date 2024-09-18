@@ -1,12 +1,10 @@
 import { ScrollView, View } from 'react-native';
 import React, { useContext, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
-import CustomFAB from '../../../components/Custom/CustomFAB';
-import { CloudContext, CloudProvider } from '../../../context/CloudContext';
+import CustomFAB from '../../../../components/Custom/CustomFAB';
+import { CloudContext, CloudProvider } from '../../../../context/CloudContext';
 import FolderScreen from './folder';
-import { StatusBar } from 'expo-status-bar';
 
 const Cloud = () => {
   const { folder, cloudLoading } = useContext(CloudContext);

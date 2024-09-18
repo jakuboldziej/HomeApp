@@ -1,7 +1,6 @@
 import { SplashScreen, Stack } from 'expo-router'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import Providers from './Providers';
 import { setBackgroundColorAsync } from 'expo-system-ui';
 
@@ -43,7 +42,6 @@ const RootLayout = () => {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name='(darts)/dartsgame' options={{ headerShown: false, gestureEnabled: false }} />
       </Stack>
-      <StatusBar style='light' />
     </Providers>
   )
 }
