@@ -1,10 +1,10 @@
 import { View, Text, ScrollView } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
-import FolderNode from '../../../../components/Cloud/Nodes/FolderNode';
-import FileNode from '../../../../components/Cloud/Nodes/FileNode';
-import LoadingScreen from '../../../../components/LoadingScreen';
-import { AuthContext } from '../../../../context/AuthContext';
-import { handleDataShown } from '../../../../lib/utils';
+import FolderNode from '../Nodes/FolderNode';
+import FileNode from '../Nodes/FileNode';
+import LoadingScreen from '../../LoadingScreen';
+import { AuthContext } from '../../../context/AuthContext';
+import { handleDataShown } from '../../../lib/utils';
 
 const FolderScreen = ({ folder }) => {
   const { user } = useContext(AuthContext);

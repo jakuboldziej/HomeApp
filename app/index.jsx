@@ -36,7 +36,8 @@ const App = () => {
       // if (!response.token) return setErr(response.message);
 
 
-      router.replace('/home');
+      // router.replace('/home');
+      router.replace('/cloud');
     } catch (err) {
       console.log(err.stack)
     }

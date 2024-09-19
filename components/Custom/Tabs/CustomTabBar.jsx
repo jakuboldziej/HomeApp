@@ -2,9 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { Keyboard, Animated } from 'react-native';
 import { TouchableRipple } from 'react-native-paper';
 import CustomTabIcon from './CustomTabIcon';
+import { useRouteInfo } from 'expo-router/build/hooks';
+import { router } from 'expo-router';
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
+  const routeInfo = useRouteInfo()
+
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isTabBarVisible, setIsTabBarVisible] = useState(true);
+
   const translateY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -31,6 +37,13 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     };
   }, [translateY]);
 
+  useEffect(() => {
+    const routesWithoutTabBar = [];
+
+    if (keyboardVisible === true || routesWithoutTabBar.includes(routeInfo.pathname)) setIsTabBarVisible(false);
+    else setIsTabBarVisible(true);
+  }, [keyboardVisible, routeInfo]);
+
   return (
     <Animated.View
       style={{
@@ -38,7 +51,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         backgroundColor: 'white',
         height: 65,
         transform: [{ translateY }],
-        display: keyboardVisible ? 'none' : 'flex'
+        display: isTabBarVisible === true ? 'flex' : 'none'
       }}
     >
       {state.routes.map((route, index) => {
@@ -58,10 +71,15 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           }
         };
 
+        const onLongPress = () => {
+          if (routeInfo.pathname !== "/cloud" && route.name === "(drawer)") router.push("/cloud");
+        }
+
         return (
           <TouchableRipple
             key={index}
             onPress={onPress}
+            onLongPress={onLongPress}
             rippleColor="rgba(0, 0, 0, .20)"
             style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10 }}
           >

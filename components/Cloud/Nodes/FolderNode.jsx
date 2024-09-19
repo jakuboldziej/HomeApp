@@ -22,7 +22,10 @@ const FolderNode = ({ folder }) => {
         <View className="flex-row items-center w-full justify-between p-2 pl-4">
           <View className="flex flex-row items-center">
             <Folder color="white" size={25} />
-            <Text numberOfLines={1} className="text-white ml-2 font-pregular text-base max-w-10">{folder.name}</Text>
+            <View className="flex-col">
+              <Text numberOfLines={1} className="text-white ml-2 font-pregular text-base max-w-10">{folder.name}</Text>
+              <Text numberOfLines={1} className="text-slate-400 ml-2 font-pregular text-sm max-w-10">{new Date(folder.uploadDate).toLocaleString()}</Text>
+            </View>
           </View>
           <IconButton onPress={handlePresentModalPress} icon="dots-vertical" iconColor='white' size={25} />
         </View>

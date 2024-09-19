@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import React, { useRef } from 'react';
 import FolderSheet from '../../../../components/Cloud/Sheets/FolderSheet';
 import FileSheet from '../../../../components/Cloud/Sheets/FileSheet';
-import FileScreen from './file';
-import FolderScreen from './folder';
+import FolderScreen from '../../../../components/Cloud/Screens/FolderScreen';
+import FileScreen from '../../../../components/Cloud/Screens/FileScreen';
 
 export default function DocumentScreen() {
   const { name, folder, file } = useLocalSearchParams();
@@ -15,7 +15,7 @@ export default function DocumentScreen() {
   const bottomSheetModalRef = useRef(null);
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-black mt-4">
       {parsedFile && (
         <>
           <FileScreen file={parsedFile} />

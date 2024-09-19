@@ -3,8 +3,8 @@ import React from 'react'
 
 const settings = () => {
   return (
-    <View className="bg-black">
-      <Text>settings</Text>
+    <View className="bg-black flex-1">
+      <Text className="text-white">settings</Text>
     </View>
   )
 }

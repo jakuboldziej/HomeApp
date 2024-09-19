@@ -3,6 +3,8 @@ import CustomHeader from '../../../components/Cloud/Header/CustomHeader';
 import { Drawer } from 'expo-router/drawer';
 import CustomDrawerContent from '../../../components/Custom/CustomDrawerContent';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { IconButton } from 'react-native-paper';
+import { router } from 'expo-router';
 
 export default DrawerLayout = () => {
   return (
@@ -12,16 +14,17 @@ export default DrawerLayout = () => {
         drawerContent={CustomDrawerContent}
         screenOptions={{
           drawerActiveTintColor: 'pink',
-          drawerInActiveTintColor: 'white',
+          drawerInactiveTintColor: 'white',
           drawerStyle: {
             backgroundColor: 'black',
-          }
+          },
+          contentStyle: { backgroundColor: 'black' },
         }}
       >
         <Drawer.Screen
           name="cloud"
           options={{
-            title: "Cloud",
+            title: "Home",
             headerShown: false,
           }}
         />
@@ -29,6 +32,7 @@ export default DrawerLayout = () => {
           name="settings"
           options={{
             title: "Settings",
+            headerLeft: () => <IconButton icon="arrow-left" onPress={() => router.back()}></IconButton>
           }}
         />
       </Drawer>

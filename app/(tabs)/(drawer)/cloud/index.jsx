@@ -1,15 +1,17 @@
 import { ScrollView, View } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import CustomFAB from '../../../../components/Custom/CustomFAB';
 import { CloudContext, CloudProvider } from '../../../../context/CloudContext';
-import FolderScreen from './folder';
+import FolderScreen from '../../../../components/Cloud/Screens/FolderScreen';
+import { Portal } from 'react-native-paper';
 
 const Cloud = () => {
-  const { folder, cloudLoading } = useContext(CloudContext);
+  const { folders } = useContext(CloudContext);
 
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [mainFolder, setMainFolder] = useState(null);
 
   const handleSelectFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({});
@@ -46,22 +48,26 @@ const Cloud = () => {
     }
   }
 
+  useEffect(() => {
+    if (!folders) return;
+
+    setMainFolder(folders.find((folder) => folder.name === "Cloud drive"));
+  }, [folders]);
+
   return (
     <ScrollView contentContainerStyle={{ flex: 1 }}>
-      <View className="w-full h-full bg-black flex items-center">
-        {folder && (
-          <FolderScreen folder={folder} />
-        )}
-        <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
-      </View>
+      <Portal.Host>
+        <View className="w-full h-full bg-black flex items-center mt-4">
+          {mainFolder && (
+            <FolderScreen folder={mainFolder} />
+          )}
+          <Portal>
+            <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
+          </Portal>
+        </View>
+      </Portal.Host>
     </ScrollView>
   )
 }
 
-export default CloudWrapper = () => {
-  return (
-    <CloudProvider>
-      <Cloud />
-    </CloudProvider>
-  )
-}
+export default Cloud
