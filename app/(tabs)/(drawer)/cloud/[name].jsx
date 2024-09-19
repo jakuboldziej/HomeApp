@@ -15,7 +15,7 @@ export default function DocumentScreen() {
   const bottomSheetModalRef = useRef(null);
 
   return (
-    <View className="flex-1 bg-black mt-4">
+    <View className="flex-1 w-full bg-black">
       {parsedFile && (
         <>
           <FileScreen file={parsedFile} />

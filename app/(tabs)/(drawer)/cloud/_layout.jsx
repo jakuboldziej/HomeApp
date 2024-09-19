@@ -41,7 +41,7 @@ const Cloud = () => {
           name="search"
           options={{
             headerShown: false,
-            animation: 'fade'
+            animation: 'fade',
           }}
         />
       </Stack>

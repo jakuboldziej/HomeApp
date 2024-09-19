@@ -5,7 +5,7 @@ import { Image } from 'expo-image'
 
 const LoadingScreen = ({ text }) => {
   return (
-    <View className="bg-black h-full items-center justify-center">
+    <View className="bg-black w-full h-full items-center justify-center">
       <Image
         source={require("../assets/images/icon.png")}
         style={{ height: 350, width: 350 }}
