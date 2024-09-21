@@ -21,7 +21,7 @@ const Darts = () => {
     if (!gameResponse.message) {
       router.replace({ pathname: '(darts)/dartsgame', params: { game: JSON.stringify(gameResponse) } });
     } else {
-      setVisibleSnack(true)
+      setVisibleSnack(true);
     }
 
     setIsLoading(false);
