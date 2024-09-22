@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Stack } from 'expo-router';
 import CustomHeader from '../../../../components/Cloud/Header/CustomHeader';
 import { setBackgroundColorAsync } from 'expo-system-ui';
 import CustomHeaderRight from '../../../../components/Cloud/Header/CustomHeaderRight';
-import { CloudProvider } from '../../../../context/CloudContext';
+import { CloudContext, CloudProvider } from '../../../../context/CloudContext';
+import CustomSnackBar from '../../../../components/Custom/CustomSnackBar';
 
 const Cloud = () => {
-  setBackgroundColorAsync("black");
+  const { snackbarVisible, setSnackbarVisible, snackbarTitle } = useContext(CloudContext);
 
   return (
-    <CloudProvider>
+    <>
       <Stack
         initialRouteName="index"
         screenOptions={{
@@ -45,8 +46,18 @@ const Cloud = () => {
           }}
         />
       </Stack>
-    </CloudProvider>
+
+      <CustomSnackBar title={snackbarTitle} visible={snackbarVisible} setVisible={setSnackbarVisible} />
+    </>
   )
 }
 
-export default Cloud
+export default CloudWrapper = () => {
+  setBackgroundColorAsync("black");
+
+  return (
+    <CloudProvider>
+      <Cloud />
+    </CloudProvider>
+  )
+}

@@ -8,6 +8,7 @@ export const CloudContext = createContext()
 export const CloudProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
 
+  // Documents
   const [folders, setFolders] = useState(null);
   const [files, setFiles] = useState(null);
 
@@ -22,8 +23,24 @@ export const CloudProvider = ({ children }) => {
     if (user) fetchCloudUserFolders();
   }, [user]);
 
+  // Snackbar
+
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarTitle, setSnackbarTitle] = useState('');
+
+  const providerExports = {
+    folders,
+    setFolders,
+    files,
+    setFiles,
+    snackbarVisible,
+    setSnackbarVisible,
+    snackbarTitle,
+    setSnackbarTitle
+  };
+
   return (
-    <CloudContext.Provider value={{ folders, setFolders, files, setFiles }}>
+    <CloudContext.Provider value={providerExports}>
       {children}
     </CloudContext.Provider>
   )

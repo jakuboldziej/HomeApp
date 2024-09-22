@@ -7,9 +7,11 @@ import { AuthContext } from '../../../context/AuthContext';
 import { handleDataShown } from '../../../lib/utils';
 import { Portal } from 'react-native-paper';
 import CustomFAB from '../../Custom/CustomFAB'
+import { CloudContext } from '../../../context/CloudContext';
 
 const FolderScreen = ({ folder }) => {
   const { user } = useContext(AuthContext);
+  const { setSnackbarVisible, setSnackbarTitle } = useContext(CloudContext);
 
   const [dataShown, setDataShown] = useState(null);
   const [selectedDocument, setSelectedDocument] = useState(null);
@@ -42,7 +44,8 @@ const FolderScreen = ({ folder }) => {
   }
 
   const handleCreateFolder = async (folderName) => {
-    console.log(folderName)
+    setSnackbarTitle(`Created new folder: ${folderName}`)
+    setSnackbarVisible(true);
   }
 
   const handleNew = async (type) => {
