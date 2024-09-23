@@ -1,5 +1,5 @@
-import { View, Text, ScrollView } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, ScrollView, RefreshControl } from 'react-native';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import FolderNode from '../Nodes/FolderNode';
 import FileNode from '../Nodes/FileNode';
 import LoadingScreen from '../../LoadingScreen';
@@ -15,6 +15,8 @@ const FolderScreen = ({ folder }) => {
 
   const [dataShown, setDataShown] = useState(null);
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
 
   const handleSelectFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({});
@@ -58,32 +60,39 @@ const FolderScreen = ({ folder }) => {
     }
   }
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    setDataShown(null);
+    await handleFolderData();
+    setRefreshing(false);
+  }, []);
+
   useEffect(() => {
     if (user) handleFolderData();
   }, [user]);
 
   return (
-    <ScrollView contentContainerStyle={{ flex: 1 }}>
-      <Portal.Host>
-        <View className="w-full flex-1 flex bg-black mt-4">
-          {dataShown === null ? (
-            <LoadingScreen text="Loading files..." />
-          ) : dataShown.length > 0 ? (
-            dataShown.map((data) => (
+    <Portal.Host>
+      <View style={{ flex: 1, backgroundColor: 'black', marginTop: 4 }}>
+        {dataShown === null ? (
+          <LoadingScreen text="Loading files..." />
+        ) : dataShown.length > 0 ? (
+          <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+            {dataShown.map((data) => (
               <View key={data._id}>
                 {data.type === "folder" ? <FolderNode folder={data} /> : <FileNode file={data} />}
               </View>
-            ))
-          ) : (
-            <Text className="text-center text-2xl text-gray-500 mt-12">No files...</Text>
-          )}
+            ))}
+          </ScrollView>
+        ) : (
+          <Text style={{ textAlign: 'center', fontSize: 24, color: 'gray', marginTop: 12 }}>No files...</Text>
+        )}
 
-          <Portal>
-            <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
-          </Portal>
-        </View>
-      </Portal.Host>
-    </ScrollView>
+        <Portal>
+          <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
+        </Portal>
+      </View>
+    </Portal.Host >
   )
 }
 
