@@ -26,14 +26,12 @@ const App = () => {
 
   const handleLogin = async () => {
     try {
-      // if (!username) return setErr("Fill username");
-      // if (!password) return setErr("Fill password");
+      if (!username) return setErr("Fill username");
+      if (!password) return setErr("Fill password");
 
-      // const response = await login(username, password);
-      const response = await getUser("kubek");
-      setUser(response);
+      const response = await login(username, password);
 
-      // if (!response.token) return setErr(response.message);
+      if (!response.token) return setErr(response.message);
 
       router.replace('/home');
     } catch (err) {
