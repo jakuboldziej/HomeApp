@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Keyboard } from 'react-native';
-import { Button, Dialog, FAB, Portal, TextInput } from 'react-native-paper';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Button, Dialog, FAB, TextInput } from 'react-native-paper';
 import CustomDialog from './CustomDialog';
 
 const CustomFAB = ({ handleNew, handleCreateFolder }) => {
@@ -68,17 +68,20 @@ const CustomFAB = ({ handleNew, handleCreateFolder }) => {
         onStateChange={onStateChange}
       />
 
+
       <CustomDialog visibleDialog={visibleDialog} setVisibleDialog={setVisibleDialog}>
         <Dialog.Title>Create new folder</Dialog.Title>
         <Dialog.Content>
-          <TextInput
-            label='Folder name'
-            autoFocus
-            onChangeText={(e) => setFolderName(e)}
-            onSubmitEditing={() => FABCreateFolder()}
-            activeUnderlineColor='green'
-            className="bg-white"
-          />
+          <ScrollView keyboardShouldPersistTaps='handled'>
+            <TextInput
+              label='Folder name'
+              autoFocus
+              onChangeText={(e) => setFolderName(e)}
+              onSubmitEditing={() => FABCreateFolder()}
+              activeUnderlineColor='green'
+              className="bg-white"
+            />
+          </ScrollView>
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={() => handleCloseDialog()}>Cancel</Button>
