@@ -41,7 +41,8 @@ const Darts = () => {
               placeholder='1234'
               onChangeText={(e) => setGameCode(e)}
               returnKeyType='done'
-              onSubmitEditing={handleJoinDartsGame}
+              enablesReturnKeyAutomatically={true}
+              onSubmitEditing={gameCode.length !== 0 && handleJoinDartsGame}
               maxLength={4}
               underlineColor='transparent'
               activeUnderlineColor='transparent'

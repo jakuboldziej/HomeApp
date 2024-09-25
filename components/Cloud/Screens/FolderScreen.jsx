@@ -5,7 +5,7 @@ import FileNode from '../Nodes/FileNode';
 import LoadingScreen from '../../LoadingScreen';
 import { AuthContext } from '../../../context/AuthContext';
 import { handleDataShown } from '../../../lib/utils';
-import { Portal } from 'react-native-paper';
+import { Portal, Tooltip } from 'react-native-paper';
 import CustomFAB from '../../Custom/CustomFAB'
 import { CloudContext } from '../../../context/CloudContext';
 

@@ -111,6 +111,7 @@ const App = () => {
                 returnKeyType='next'
                 onSubmitEditing={() => passwordInputRef.current?.focus()}
                 autoComplete='username'
+                textContentType='username'
                 error={handleInputError('username')}
                 autoCapitalize='none'
                 activeUnderlineColor='green'
