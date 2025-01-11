@@ -35,7 +35,7 @@ const App = () => {
 
       router.replace('/home');
     } catch (err) {
-      console.log(err.stack)
+      console.error(err.stack)
     }
   }
 
@@ -57,9 +57,10 @@ const App = () => {
 
   const getSecureStore = async () => {
     setIsLoading(true);
-    const alreadyLoggedIn = await SecureStore.getItemAsync("user");
+    const alreadyLoggedIn = JSON.parse(await SecureStore.getItemAsync("user"));
+
     if (alreadyLoggedIn) {
-      const loggedInUser = await getUser(alreadyLoggedIn)
+      const loggedInUser = await getUser(alreadyLoggedIn.displayName);
       setUser(loggedInUser);
       router.replace("/home");
       socket.connect();

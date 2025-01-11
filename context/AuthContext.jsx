@@ -28,7 +28,11 @@ export const AuthProvider = ({ children }) => {
     const loggedUser = await getUser(username);
 
     setUser(loggedUser);
-    await SecureStore.setItemAsync("user", loggedUser.displayName);
+
+    await SecureStore.setItemAsync("user", JSON.stringify({
+      displayName: loggedUser.displayName,
+      token: fetchedUser.token
+    }));
 
     socket.connect();
 
