@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Keyboard, ScrollView } from 'react-native';
 import { Button, Dialog, FAB, TextInput } from 'react-native-paper';
 import CustomDialog from './CustomDialog';
 
@@ -45,6 +45,7 @@ const CustomFAB = ({ handleNew, handleCreateFolder }) => {
         backdropColor='rgba(0, 0, 0, 0.74)'
         icon={openedFAB ? 'close' : 'plus'}
         label={openedFAB ? '' : 'New'}
+        style={{ position: 'absolute', bottom: 65, zIndex: 1000 }}
         actions={[
           {
             icon: 'file',
@@ -67,7 +68,6 @@ const CustomFAB = ({ handleNew, handleCreateFolder }) => {
         ]}
         onStateChange={onStateChange}
       />
-
 
       <CustomDialog visibleDialog={visibleDialog} setVisibleDialog={setVisibleDialog}>
         <Dialog.Title>Create new folder</Dialog.Title>

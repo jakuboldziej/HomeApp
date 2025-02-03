@@ -1,4 +1,4 @@
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import React, { useContext, useState, useEffect } from 'react';
 import { CloudContext } from '../../../../context/CloudContext';
 import FolderScreen from '../../../../components/Cloud/Screens/FolderScreen';

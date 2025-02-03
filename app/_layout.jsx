@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font'
 import { useEffect } from 'react';
 import Providers from './Providers';
 import { setBackgroundColorAsync } from 'expo-system-ui';
+import { Portal } from 'react-native-paper';
 
 SplashScreen.preventAutoHideAsync();
 

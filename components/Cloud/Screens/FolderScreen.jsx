@@ -17,7 +17,6 @@ const FolderScreen = ({ folder }) => {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
-
   const handleSelectFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({});
 
@@ -72,27 +71,23 @@ const FolderScreen = ({ folder }) => {
   }, [user]);
 
   return (
-    <Portal.Host>
-      <View style={{ flex: 1, backgroundColor: 'black', marginTop: 4 }}>
-        {dataShown === null ? (
-          <LoadingScreen text="Loading files..." />
-        ) : dataShown.length > 0 ? (
-          <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-            {dataShown.map((data) => (
-              <View key={data._id}>
-                {data.type === "folder" ? <FolderNode folder={data} /> : <FileNode file={data} />}
-              </View>
-            ))}
-          </ScrollView>
-        ) : (
-          <Text style={{ textAlign: 'center', fontSize: 24, color: 'gray', marginTop: 12 }}>No files...</Text>
-        )}
+    <View style={{ flex: 1, backgroundColor: 'black', marginTop: 4 }}>
+      {dataShown === null ? (
+        <LoadingScreen text="Loading files..." />
+      ) : dataShown.length > 0 ? (
+        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+          {dataShown.map((data) => (
+            <View key={data._id}>
+              {data.type === "folder" ? <FolderNode folder={data} /> : <FileNode file={data} />}
+            </View>
+          ))}
+        </ScrollView>
+      ) : (
+        <Text style={{ textAlign: 'center', fontSize: 24, color: 'gray', marginTop: 12 }}>No files...</Text>
+      )}
 
-        <Portal>
-          <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
-        </Portal>
-      </View>
-    </Portal.Host >
+      <CustomFAB handleNew={handleNew} handleCreateFolder={handleCreateFolder} />
+    </View>
   )
 }
 

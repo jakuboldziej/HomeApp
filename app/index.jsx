@@ -5,7 +5,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { AuthContext } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
-import { getUser } from '../lib/fetch';
+import { checkSession, getUser } from '../lib/fetch';
 import { socket } from '../lib/socketio';
 import { HelperText, TextInput } from 'react-native-paper';
 import { Image } from 'expo-image';
@@ -35,7 +35,7 @@ const App = () => {
 
       router.replace('/home');
     } catch (err) {
-      console.error(err.stack)
+      console.error(err.stack);
     }
   }
 
@@ -47,7 +47,7 @@ const App = () => {
 
   const handleInputError = (type) => {
     if (!err) return false;
-    const usernameErrors = ["Fill username", "User not found"];
+    const usernameErrors = ["Fill username", "User not found", "Token expired"];
     const passwordErrors = ["Fill password", "Wrong password"];
 
     if (usernameErrors.includes(err) && type === "username") return true;
@@ -60,10 +60,22 @@ const App = () => {
     const alreadyLoggedIn = JSON.parse(await SecureStore.getItemAsync("user"));
 
     if (alreadyLoggedIn) {
-      const loggedInUser = await getUser(alreadyLoggedIn.displayName);
-      setUser(loggedInUser);
-      router.replace("/home");
-      socket.connect();
+      try {
+        const loggedInUser = await getUser(alreadyLoggedIn.displayName);
+
+        const checkedSession = await checkSession(alreadyLoggedIn.token);
+
+        if (checkedSession.ok !== true) return setErr("Token expired")
+
+        setUser(loggedInUser);
+
+        router.replace("/home");
+        socket.connect();
+      } catch (err) {
+        console.error(err.stack);
+      } finally {
+        setIsLoading(false);
+      }
     }
     setIsLoading(false);
   }
@@ -107,7 +119,6 @@ const App = () => {
             <View>
               <TextInput
                 label='Username'
-                autoFocus
                 onChangeText={(e) => setUsername(e)}
                 returnKeyType='next'
                 onSubmitEditing={() => passwordInputRef.current?.focus()}
