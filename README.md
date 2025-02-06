@@ -23,4 +23,6 @@ You can manage your files in the cloud by sending and installing files with your
 
 Running my application can be problematic without specific environment variables.
 
+This app requires 2 env variables.
+
 For more information on how to set up the project, feel free to contact me: [kontakt@oldziej.pl](mailto:kontakt@oldziej.pl).
