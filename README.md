@@ -19,7 +19,7 @@ You can manage your files in the cloud by sending and installing files with your
 - [NativeWind](https://www.nativewind.dev/)
 - [socket.io-client](https://socket.io/docs/v4/client-api/)
 
-## Installing locally
+## Installing Locally
 
 Running my application can be problematic without specific environment variables.
 
