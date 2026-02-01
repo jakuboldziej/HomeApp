@@ -24,8 +24,48 @@ const ensureGameRecord = (gameData) => {
 export const DartsGameProvider = ({ children }) => {
   const [game, setGame] = useState(null);
   const { user } = useContext(AuthContext);
+  const [isSocketReady, setIsSocketReady] = useState(false);
 
   useEffect(() => {
+    if (user && !socket.connected) {
+      ensureSocketConnection()
+        .then(() => {
+          setIsSocketReady(true);
+        })
+        .catch((error) => {
+          console.error('DartsGameContext: Failed to connect socket:', error);
+          setTimeout(() => {
+            if (user && !socket.connected) {
+              socket.connect();
+            }
+          }, 2000);
+        });
+    } else if (socket.connected) {
+      setIsSocketReady(true);
+    }
+
+    const handleConnect = () => {
+      setIsSocketReady(true);
+    };
+
+    const handleDisconnect = () => {
+      setIsSocketReady(false);
+    };
+
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+
+    return () => {
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (!isSocketReady) {
+      return;
+    }
+
     const updateLiveGamePreviewClient = (data) => {
       const gameData = JSON.parse(data);
       const gameWithRecord = ensureGameRecord(gameData);
@@ -71,7 +111,7 @@ export const DartsGameProvider = ({ children }) => {
       socket.off('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
       socket.off('reconnect', handleReconnect);
     }
-  }, [game]);
+  }, [game, isSocketReady, user]);
 
   return (
     <DartsGameContext.Provider value={{ game, setGame }}>
