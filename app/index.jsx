@@ -5,7 +5,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { AuthContext } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
-import { checkSession, getUser } from '../lib/fetch';
+import { checkSession, getUser, refreshToken } from '../lib/fetch';
 import { socket } from '../lib/socketio';
 import { HelperText, TextInput } from 'react-native-paper';
 import { Image } from 'expo-image';
@@ -65,7 +65,37 @@ const App = () => {
 
         const checkedSession = await checkSession(alreadyLoggedIn.token);
 
-        if (checkedSession.ok !== true) return setErr("Token expired")
+        if (checkedSession.ok !== true) {
+          if (checkedSession.message === "Token expired") {
+            const refreshResponse = await refreshToken(alreadyLoggedIn.token);
+            
+            if (refreshResponse.token) {
+              await SecureStore.setItemAsync("user", JSON.stringify({
+                displayName: alreadyLoggedIn.displayName,
+                token: refreshResponse.token
+              }));
+              
+              setUser(loggedInUser);
+              router.replace("/home");
+              socket.connect();
+              setIsLoading(false);
+              return;
+            }
+          }
+          
+          return setErr("Token expired");
+        }
+
+        if (checkedSession.shouldRefresh) {
+          const refreshResponse = await refreshToken(alreadyLoggedIn.token);
+          
+          if (refreshResponse.token) {
+            await SecureStore.setItemAsync("user", JSON.stringify({
+              displayName: alreadyLoggedIn.displayName,
+              token: refreshResponse.token
+            }));
+          }
+        }
 
         setUser(loggedInUser);
 
@@ -106,13 +136,13 @@ const App = () => {
 
   return (
     <SafeAreaView className="h-full bg-black">
-      <ScrollView contentContainerStyle={{ flex: 1 }} keyboardShouldPersistTaps='handled'>
-        <View className={`w-full h-full flex flex-col items-center px-4 ${keyboardVisible ? 'justify-end' : 'justify-center'}`}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps='handled'>
+        <View className={`w-full flex flex-col items-center px-4 ${keyboardVisible ? 'justify-start pt-4' : 'justify-center flex-1'}`}>
           <View className="w-full space-y-4">
             <View className="items-center">
               <Image
                 source={require("../assets/images/icon.png")}
-                style={{ height: 250, width: 250 }}
+                style={{ height: keyboardVisible ? 100 : 250, width: keyboardVisible ? 100 : 250 }}
               />
             </View>
             <Text className="text-3xl text-white font-pregular">Log In to Home App</Text>

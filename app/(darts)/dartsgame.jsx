@@ -1,10 +1,10 @@
-import { ActivityIndicator, Text, View } from 'react-native'
-import React, { useContext, useState } from 'react'
+import { Text, View } from 'react-native'
+import { useContext, useState } from 'react'
 import CustomButton from '../../components/Custom/CustomButton'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
-import { socket } from '../../lib/socketio'
+import { socket, ensureSocketConnection } from '../../lib/socketio'
 import { DartsGameContext } from '../../context/DartsGameContext'
 import GameKeyboard from '../../components/dartsGame/GameKeyboard'
 import GameSummary from '../../components/dartsGame/GameSummary'
@@ -27,12 +27,16 @@ const DartsGame = () => {
   const hideModal = () => setVisibleModal(false);
 
   const handleGameLeave = () => {
-    router.replace("/darts")
-    socket.emit('leaveLiveGamePreview', JSON.stringify({ gameCode: game.gameCode }));
+    if (game && socket.connected) {
+      socket.emit('leaveLiveGamePreview', JSON.stringify({ gameCode: game.gameCode }));
+    }
     setGame(null);
+    router.replace("/darts");
   }
 
   useEffect(() => {
+    let mounted = true;
+
     // Prevent back button
     navigation.addListener('beforeRemove', (e) => {
       if (e.data.action.type === "GO_BACK") {
@@ -40,13 +44,33 @@ const DartsGame = () => {
       }
     });
 
-    const parsedGame = JSON.parse(params.game);
-    socket.emit("joinLiveGamePreview", JSON.stringify({
-      gameCode: parsedGame.gameCode
-    }));
+    const initializeGame = async () => {
+      try {
+        const parsedGame = JSON.parse(params.game);
+        
+        await ensureSocketConnection();
+        
+        if (mounted) {
+          socket.emit("joinLiveGamePreview", JSON.stringify({
+            gameCode: parsedGame.gameCode
+          }));
+          
+          setGame(parsedGame);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Failed to initialize game:', error);
+        if (mounted) {
+          router.replace("/darts");
+        }
+      }
+    };
 
-    setGame(parsedGame);
-    setIsLoading(false);
+    initializeGame();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -60,7 +84,7 @@ const DartsGame = () => {
     setCurrentUser(game.users.find((user) => user.displayName === game.turn));
   }, [game]);
 
-  if (!currentUser) return <LoadingScreen text="Loading game..." />
+  if (!game || !currentUser) return <LoadingScreen text="Loading game..." />
 
   return (
     <SafeAreaView className="h-full bg-black">

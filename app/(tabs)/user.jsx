@@ -15,6 +15,16 @@ const User = () => {
     setIsLoading(false);
   }
 
+  if (!user) {
+    return (
+      <SafeAreaView className="h-full bg-black">
+        <View className="w-full h-full flex items-center justify-center">
+          <Text className="text-white text-xl">Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="h-full bg-black">
       <ScrollView contentContainerStyle={{ flex: 1 }}>

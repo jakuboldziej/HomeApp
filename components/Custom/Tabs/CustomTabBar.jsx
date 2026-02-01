@@ -4,9 +4,11 @@ import { TouchableRipple } from 'react-native-paper';
 import CustomTabIcon from './CustomTabIcon';
 import { useRouteInfo } from 'expo-router/build/hooks';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
   const routeInfo = useRouteInfo()
+  const insets = useSafeAreaInsets();
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [isTabBarVisible, setIsTabBarVisible] = useState(true);
@@ -16,7 +18,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
       Animated.timing(translateY, {
-        toValue: 65,
+        toValue: 65 + insets.bottom,
         duration: 300,
         useNativeDriver: true,
       }).start(() => setKeyboardVisible(true));
@@ -35,7 +37,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
-  }, [translateY]);
+  }, [translateY, insets.bottom]);
 
   useEffect(() => {
     const routesWithoutTabBar = [];
@@ -49,7 +51,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       style={{
         flexDirection: 'row',
         backgroundColor: 'white',
-        height: 65,
+        height: 65 + insets.bottom,
+        paddingBottom: insets.bottom,
         transform: [{ translateY }],
         display: isTabBarVisible === true ? 'flex' : 'none'
       }}

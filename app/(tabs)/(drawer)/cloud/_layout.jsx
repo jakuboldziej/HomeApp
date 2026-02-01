@@ -52,7 +52,7 @@ const Cloud = () => {
   )
 }
 
-export default CloudWrapper = () => {
+const CloudWrapper = () => {
   setBackgroundColorAsync("black");
 
   return (
@@ -61,3 +61,5 @@ export default CloudWrapper = () => {
     </CloudProvider>
   )
 }
+
+export default CloudWrapper;

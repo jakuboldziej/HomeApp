@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { IconButton } from 'react-native-paper';
 import { router } from 'expo-router';
 
-export default DrawerLayout = () => {
+const DrawerLayout = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
@@ -39,3 +39,5 @@ export default DrawerLayout = () => {
     </GestureHandlerRootView>
   )
 }
+
+export default DrawerLayout;

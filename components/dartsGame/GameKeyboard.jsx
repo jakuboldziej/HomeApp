@@ -11,22 +11,26 @@ const GameKeyboard = () => {
   const [specialState, setSpecialState] = useState([false, ""]);
 
   const handleClick = (input) => {
-    socket.emit("externalKeyboardInput", JSON.stringify({
-      input: input,
-      gameCode: game.gameCode
-    }));
-
-    setSpecialState([false, ""]);
+    if (specialState[0]) {
+      socket.emit("externalKeyboardInput", JSON.stringify({
+        input: input,
+        action: specialState[1],
+        gameCode: game.gameCode
+      }));
+      setSpecialState([false, ""]);
+    } else {
+      socket.emit("externalKeyboardInput", JSON.stringify({
+        input: input,
+        gameCode: game.gameCode
+      }));
+    }
   }
 
   const handleSpecialStateClick = (input) => {
-    socket.emit("externalKeyboardInput", JSON.stringify({
-      input: input,
-      gameCode: game.gameCode
-    }));
-
     if (input === "DOUBLE" || input === "TRIPLE") {
-      specialState[0] ? setSpecialState([false, ""]) : setSpecialState([true, input]);
+      specialState[0] && specialState[1] === input 
+        ? setSpecialState([false, ""]) 
+        : setSpecialState([true, input]);
     }
   }
 
@@ -71,14 +75,14 @@ const GameKeyboard = () => {
           isDisabled={handleDisabledSpecial('DOORS')}
         />
         <CustomButton
-          containerStyle={`${inputTailwind} bg-[#ffd100]`}
+          containerStyle={`${inputTailwind} ${specialState[1] === 'DOUBLE' ? 'bg-[#c4a100]' : 'bg-[#ffd100]'}`}
           textStyles='min-w-26'
           title="DOUBLE"
           onPress={() => handleSpecialStateClick('DOUBLE')}
           isDisabled={handleDisabledSpecial('DOUBLE')}
         />
         <CustomButton
-          containerStyle={`${inputTailwind} bg-[#ff8a00]`}
+          containerStyle={`${inputTailwind} ${specialState[1] === 'TRIPLE' ? 'bg-[#c96e02]' : 'bg-[#ff8a00]'}`}
           textStyles='min-w-26'
           title="TRIPLE"
           onPress={() => handleSpecialStateClick('TRIPLE')}

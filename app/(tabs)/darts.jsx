@@ -1,26 +1,43 @@
 import { View, Text, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import CustomButton from '../../components/Custom/CustomButton'
 import { router } from 'expo-router'
 import { getDartsGame } from '../../lib/fetch'
 import { TextInput } from 'react-native-paper'
 import CustomSnackBar from '../../components/Custom/CustomSnackBar'
+import { socket, ensureSocketConnection } from '../../lib/socketio'
 
 const Darts = () => {
   const [gameCode, setGameCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const [visibleSnack, setVisibleSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState('Game code is wrong');
+
+  useEffect(() => {
+    ensureSocketConnection().catch(err => {
+      console.error('Socket connection error:', err);
+    });
+  }, []);
 
   const handleJoinDartsGame = async () => {
     setIsLoading(true);
 
-    const gameResponse = await getDartsGame(gameCode);
+    try {
+      await ensureSocketConnection();
 
-    if (!gameResponse.message) {
-      router.replace({ pathname: '(darts)/dartsgame', params: { game: JSON.stringify(gameResponse) } });
-    } else {
+      const gameResponse = await getDartsGame(gameCode);
+
+      if (!gameResponse.message) {
+        router.replace({ pathname: '(darts)/dartsgame', params: { game: JSON.stringify(gameResponse) } });
+      } else {
+        setSnackMessage(gameResponse.message || 'Game code is wrong');
+        setVisibleSnack(true);
+      }
+    } catch (error) {
+      console.error('Error joining game:', error);
+      setSnackMessage('Connection error. Please try again.');
       setVisibleSnack(true);
     }
 
@@ -51,7 +68,7 @@ const Darts = () => {
             <CustomButton title="Join game" onPress={handleJoinDartsGame} isLoading={isLoading} isDisabled={gameCode === ''} />
           </View>
 
-          <CustomSnackBar title="Game code is wrong" visible={visibleSnack} setVisible={setVisibleSnack} />
+          <CustomSnackBar title={snackMessage} visible={visibleSnack} setVisible={setVisibleSnack} />
         </View>
       </ScrollView>
     </SafeAreaView>
