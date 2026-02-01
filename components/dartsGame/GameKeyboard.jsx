@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import CustomButton from '../Custom/CustomButton';
 import { DartsGameContext } from '../../context/DartsGameContext';
 import { socket } from '../../lib/socketio';
+import { isInitialGameState } from '../../lib/recordUtils';
 
 const inputTailwind = "bg-creamy rounded-[25px] m-0.5";
 
@@ -49,11 +50,7 @@ const GameKeyboard = () => {
   }
 
   const handleShowQuitBtn = () => {
-    if (game && game.record) {
-      return game.record.length === 1
-    } else {
-      return game.round === 1 && game.users[0].turns[1] === null;
-    }
+    return isInitialGameState(game) || (game?.round === 1 && game?.users?.[0]?.turns?.[1] === null);
   }
 
   const numbers = [];

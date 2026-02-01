@@ -2,8 +2,24 @@ import { createContext, useEffect, useState, useContext } from "react";
 import { socket, ensureSocketConnection } from "../lib/socketio";
 import { router } from 'expo-router'
 import { AuthContext } from '../context/AuthContext';
+import { getDartsGame } from '../lib/fetch';
 
 export const DartsGameContext = createContext()
+
+const ensureGameRecord = (gameData) => {
+  if (!gameData) return gameData;
+  
+  if (!gameData.record || gameData.record.length === 0) {
+    gameData.record = [{
+      game: {
+        round: gameData.round,
+        turn: gameData.turn
+      },
+      users: gameData.users.map(user => ({ ...user }))
+    }];
+  }
+  return gameData;
+};
 
 export const DartsGameProvider = ({ children }) => {
   const [game, setGame] = useState(null);
@@ -12,18 +28,27 @@ export const DartsGameProvider = ({ children }) => {
   useEffect(() => {
     const updateLiveGamePreviewClient = (data) => {
       const gameData = JSON.parse(data);
-      setGame(gameData);
+      const gameWithRecord = ensureGameRecord(gameData);
+      setGame(gameWithRecord);
     }
 
     const handleReconnect = async () => {
       if (game && game.gameCode) {
         try {
           await ensureSocketConnection();
+          
+          const freshGame = await getDartsGame(game._id);
+          const gameWithRecord = ensureGameRecord(freshGame);
+          setGame(gameWithRecord);
+          
           socket.emit("joinLiveGamePreview", JSON.stringify({
             gameCode: game.gameCode
           }));
         } catch (error) {
-          console.error('Failed to rejoin game after reconnect:', error);
+          console.error('Failed to restore game from database:', error);
+          socket.emit("joinLiveGamePreview", JSON.stringify({
+            gameCode: game.gameCode
+          }));
         }
       }
     };
@@ -32,7 +57,8 @@ export const DartsGameProvider = ({ children }) => {
       const { game, userDisplayNames } = JSON.parse(data);
 
       if (user && userDisplayNames.includes(user?.displayName)) {
-        router.replace({ pathname: '(darts)/dartsgame', params: { game: JSON.stringify(game) } });
+        const gameWithRecord = ensureGameRecord(game);
+        router.replace({ pathname: '(darts)/dartsgame', params: { game: JSON.stringify(gameWithRecord) } });
       }
     };
 
