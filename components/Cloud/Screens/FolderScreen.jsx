@@ -22,7 +22,6 @@ const FolderScreen = ({ folder }) => {
 
     if (!result.canceled) {
       setSelectedDocument(result);
-      console.log(result)
     }
   }
 
@@ -34,7 +33,6 @@ const FolderScreen = ({ folder }) => {
 
     if (!result.canceled) {
       setSelectedDocument(result);
-      console.log(result)
     }
   }
 

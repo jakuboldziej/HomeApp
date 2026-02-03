@@ -1,36 +1,58 @@
 import { View } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import CustomButton from '../Custom/CustomButton';
 import { DartsGameContext } from '../../context/DartsGameContext';
 import { socket } from '../../lib/socketio';
-import { isInitialGameState } from '../../lib/recordUtils';
 
 const inputTailwind = "bg-creamy rounded-[25px] m-0.5";
 
 const GameKeyboard = () => {
-  const { game } = useContext(DartsGameContext);
+  const { game, setGame } = useContext(DartsGameContext);
   const [specialState, setSpecialState] = useState([false, ""]);
+  const pendingRequest = useRef(false);
+  const lastRequestTime = useRef(0);
+  const minRequestInterval = 100;
 
   const handleClick = (input) => {
-    if (specialState[0]) {
-      socket.emit("externalKeyboardInput", JSON.stringify({
-        input: input,
-        action: specialState[1],
-        gameCode: game.gameCode
-      }));
-      setSpecialState([false, ""]);
-    } else {
-      socket.emit("externalKeyboardInput", JSON.stringify({
-        input: input,
-        gameCode: game.gameCode
-      }));
+    const now = Date.now();
+    if (pendingRequest.current || (now - lastRequestTime.current) < minRequestInterval) {
+      console.warn('Request throttled - too fast');
+      return;
+    }
+
+    pendingRequest.current = true;
+    lastRequestTime.current = now;
+
+    const currentAction = specialState[0] ? specialState[1] : null;
+    const shouldClearSpecialState = specialState[0];
+
+    try {
+      if (currentAction) {
+        socket.emit("externalKeyboardInput", JSON.stringify({
+          input: input,
+          action: currentAction,
+          gameCode: game.gameCode
+        }));
+        if (shouldClearSpecialState) {
+          setSpecialState([false, ""]);
+        }
+      } else {
+        socket.emit("externalKeyboardInput", JSON.stringify({
+          input: input,
+          gameCode: game.gameCode
+        }));
+      }
+    } finally {
+      setTimeout(() => {
+        pendingRequest.current = false;
+      }, minRequestInterval);
     }
   }
 
   const handleSpecialStateClick = (input) => {
     if (input === "DOUBLE" || input === "TRIPLE") {
-      specialState[0] && specialState[1] === input 
-        ? setSpecialState([false, ""]) 
+      specialState[0] && specialState[1] === input
+        ? setSpecialState([false, ""])
         : setSpecialState([true, input]);
     }
   }
@@ -47,10 +69,6 @@ const GameKeyboard = () => {
       return specialState[1] === 'DOUBLE' || specialState[1] === 'TRIPLE' || (game.round === 1 && game.users[0].turns[1] === null);
     }
     return specialState[1] === 'TRIPLE' || specialState[1] === 'DOUBLE' || specialState[1] === type;
-  }
-
-  const handleShowQuitBtn = () => {
-    return isInitialGameState(game) || (game?.round === 1 && game?.users?.[0]?.turns?.[1] === null);
   }
 
   const numbers = [];
@@ -92,20 +110,6 @@ const GameKeyboard = () => {
           onPress={() => handleClick('BACK')}
           isDisabled={handleDisabledSpecial('BACK')}
         />
-        {game.training && <CustomButton
-          containerStyle={`${inputTailwind} bg-[#E55555]`}
-          textStyles='min-w-26'
-          title="END"
-          onPress={() => handleClick('END')}
-          isDisabled={handleDisabledSpecial()}
-        />}
-        {handleShowQuitBtn() && <CustomButton
-          containerStyle={`${inputTailwind} bg-[#E55555]`}
-          textStyles='min-w-26'
-          title="QUIT"
-          onPress={() => handleClick('QUIT')}
-          isDisabled={handleDisabledSpecial()}
-        />}
       </View>
     </View>
   )

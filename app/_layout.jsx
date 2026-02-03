@@ -41,7 +41,7 @@ const RootLayout = () => {
       >
         <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name='(darts)/dartsgame' options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name='(darts)' options={{ headerShown: false, gestureEnabled: false }} />
       </Stack>
     </Providers>
   )

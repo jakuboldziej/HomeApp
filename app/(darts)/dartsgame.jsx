@@ -1,5 +1,5 @@
-import { Text, View } from 'react-native'
-import { useContext, useState } from 'react'
+import { Text, View, AppState } from 'react-native'
+import { useContext, useState, useRef } from 'react'
 import CustomButton from '../../components/Custom/CustomButton'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -10,11 +10,15 @@ import GameKeyboard from '../../components/dartsGame/GameKeyboard'
 import GameSummary from '../../components/dartsGame/GameSummary'
 import { useKeepAwake } from 'expo-keep-awake'
 import LoadingScreen from '../../components/LoadingScreen'
+import { getDartsGame } from '../../lib/fetch'
+import { DrawerActions } from '@react-navigation/native'
+import { IconButton } from 'react-native-paper'
 
 const DartsGame = () => {
   useKeepAwake();
   const params = useLocalSearchParams();
   const navigation = useNavigation();
+  const appState = useRef(AppState.currentState);
 
   const { game, setGame } = useContext(DartsGameContext);
 
@@ -25,14 +29,6 @@ const DartsGame = () => {
 
   const showModal = () => setVisibleModal(true);
   const hideModal = () => setVisibleModal(false);
-
-  const handleGameLeave = () => {
-    if (game && socket.connected) {
-      socket.emit('leaveLiveGamePreview', JSON.stringify({ gameCode: game.gameCode }));
-    }
-    setGame(null);
-    router.replace("/darts");
-  }
 
   useEffect(() => {
     let mounted = true;
@@ -47,14 +43,14 @@ const DartsGame = () => {
     const initializeGame = async () => {
       try {
         const parsedGame = JSON.parse(params.game);
-        
+
         await ensureSocketConnection();
-        
+
         if (mounted) {
           socket.emit("joinLiveGamePreview", JSON.stringify({
             gameCode: parsedGame.gameCode
           }));
-          
+
           setGame(parsedGame);
           setIsLoading(false);
         }
@@ -68,10 +64,37 @@ const DartsGame = () => {
 
     initializeGame();
 
+    // Handle app state changes (background/foreground)
+    const subscription = AppState.addEventListener('change', async (nextAppState) => {
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+        console.log('DartsGame: App came to foreground, refreshing game state...');
+
+        if (game && game.gameCode) {
+          try {
+            await ensureSocketConnection();
+
+            socket.emit("joinLiveGamePreview", JSON.stringify({
+              gameCode: game.gameCode
+            }));
+
+            const freshGame = await getDartsGame(game._id);
+            if (freshGame && mounted) {
+              setGame(freshGame);
+              console.log('DartsGame: Game state refreshed from database');
+            }
+          } catch (error) {
+            console.error('DartsGame: Failed to refresh game state:', error);
+          }
+        }
+      }
+      appState.current = nextAppState;
+    });
+
     return () => {
       mounted = false;
+      subscription.remove();
     };
-  }, []);
+  }, [game?.gameCode, game?._id]);
 
   useEffect(() => {
     if (!game || isLoading) return;
@@ -89,11 +112,12 @@ const DartsGame = () => {
   return (
     <SafeAreaView className="h-full bg-black">
       <View className="w-full h-full flex flex-col items-center justify-evenly">
-        <CustomButton
-          title="Leave"
-          textStyles="text-sm px-4"
-          containerStyle={`h-12 p-0 bg-red absolute top-2 right-2 ${visibleModal && 'hidden'}`}
-          onPress={() => handleGameLeave()}
+        <IconButton
+          icon="menu"
+          iconColor="white"
+          size={28}
+          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          style={{ position: 'absolute', top: 8, right: 8, zIndex: visibleModal ? -1 : 10 }}
         />
         <Text className="font-pregular text-white text-xl absolute top-2 left-2">Round: {game.round}</Text>
         <View className="flex flex-col items-center">

@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useContext } from "react";
+import { createContext, useEffect, useState, useContext, useRef } from "react";
 import { socket, ensureSocketConnection } from "../lib/socketio";
 import { router } from 'expo-router'
 import { AuthContext } from '../context/AuthContext';
@@ -8,7 +8,7 @@ export const DartsGameContext = createContext()
 
 const ensureGameRecord = (gameData) => {
   if (!gameData) return gameData;
-  
+
   if (!gameData.record || gameData.record.length === 0) {
     gameData.record = [{
       game: {
@@ -25,6 +25,11 @@ export const DartsGameProvider = ({ children }) => {
   const [game, setGame] = useState(null);
   const { user } = useContext(AuthContext);
   const [isSocketReady, setIsSocketReady] = useState(false);
+  const gameRef = useRef(null);
+
+  useEffect(() => {
+    gameRef.current = game;
+  }, [game]);
 
   useEffect(() => {
     if (user && !socket.connected) {
@@ -46,6 +51,20 @@ export const DartsGameProvider = ({ children }) => {
 
     const handleConnect = () => {
       setIsSocketReady(true);
+
+      const currentGame = gameRef.current;
+      if (currentGame && currentGame.gameCode) {
+        socket.emit("joinLiveGamePreview", JSON.stringify({
+          gameCode: currentGame.gameCode
+        }));
+
+        getDartsGame(currentGame._id).then(freshGame => {
+          const gameWithRecord = ensureGameRecord(freshGame);
+          setGame(gameWithRecord);
+        }).catch(error => {
+          console.error('Failed to fetch fresh game state:', error);
+        });
+      }
     };
 
     const handleDisconnect = () => {
@@ -68,36 +87,57 @@ export const DartsGameProvider = ({ children }) => {
 
     const updateLiveGamePreviewClient = (data) => {
       const gameData = JSON.parse(data);
+      const currentGame = gameRef.current;
+
+      if (currentGame && currentGame.gameCode === gameData.gameCode) {
+        if (JSON.stringify(currentGame) === JSON.stringify(gameData)) {
+          return;
+        }
+      }
+
       const gameWithRecord = ensureGameRecord(gameData);
       setGame(gameWithRecord);
     }
 
     const handleReconnect = async () => {
-      if (game && game.gameCode) {
+      const currentGame = gameRef.current;
+      if (currentGame && currentGame.gameCode) {
         try {
           await ensureSocketConnection();
-          
-          const freshGame = await getDartsGame(game._id);
+
+          const freshGame = await getDartsGame(currentGame._id);
           const gameWithRecord = ensureGameRecord(freshGame);
           setGame(gameWithRecord);
-          
+
           socket.emit("joinLiveGamePreview", JSON.stringify({
-            gameCode: game.gameCode
+            gameCode: currentGame.gameCode
           }));
         } catch (error) {
           console.error('Failed to restore game from database:', error);
           socket.emit("joinLiveGamePreview", JSON.stringify({
-            gameCode: game.gameCode
+            gameCode: currentGame.gameCode
           }));
         }
       }
     };
 
     const gameCreated = (data) => {
-      const { game, userDisplayNames } = JSON.parse(data);
+      const { game: newGame, userDisplayNames } = JSON.parse(data);
 
       if (user && userDisplayNames.includes(user?.displayName)) {
-        const gameWithRecord = ensureGameRecord(game);
+        const gameWithRecord = ensureGameRecord(newGame);
+        const currentGame = gameRef.current;
+
+        if (currentGame && currentGame.gameCode && currentGame.active !== false) {
+          socket.emit('leaveLiveGamePreview', JSON.stringify({ gameCode: currentGame.gameCode }));
+        }
+
+        setGame(gameWithRecord);
+
+        socket.emit("joinLiveGamePreview", JSON.stringify({
+          gameCode: newGame.gameCode
+        }));
+
         router.replace({ pathname: '(darts)/dartsgame', params: { game: JSON.stringify(gameWithRecord) } });
       }
     };
@@ -111,7 +151,7 @@ export const DartsGameProvider = ({ children }) => {
       socket.off('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
       socket.off('reconnect', handleReconnect);
     }
-  }, [game, isSocketReady, user]);
+  }, [isSocketReady, user]);
 
   return (
     <DartsGameContext.Provider value={{ game, setGame }}>
