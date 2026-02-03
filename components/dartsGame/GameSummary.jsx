@@ -13,6 +13,12 @@ const GameSummary = ({ visibleModal, hideModal }) => {
 
   const [isPlayAgainDisabled, setIsPlayAgainDisabled] = useState(false);
 
+  useEffect(() => {
+    if (visibleModal) {
+      setIsPlayAgainDisabled(false);
+    }
+  }, [visibleModal]);
+
   const handleGameLeave = () => {
     if (game && socket.connected) {
       socket.emit('leaveLiveGamePreview', JSON.stringify({ gameCode: game.gameCode }));

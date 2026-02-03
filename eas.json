@@ -21,7 +21,8 @@
         "EXPO_PUBLIC_BACKEND_URL": "https://oldziej.pl"
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "credentialsSource": "remote"
       }
     },
     "production": {
@@ -30,7 +31,8 @@
       },
       "android": {
         "image": "latest",
-        "buildType": "apk"
+        "buildType": "apk",
+        "credentialsSource": "remote"
       },
       "ios": {
         "image": "latest"
