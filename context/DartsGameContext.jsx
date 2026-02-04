@@ -145,7 +145,7 @@ export const DartsGameProvider = ({ children }) => {
 
     const handleOverthrow = (userDisplayName) => {
       setOverthrow(userDisplayName);
-      setTimeout(() => setOverthrow(false), 2000);
+      setTimeout(() => setOverthrow(false), 1000);
     };
 
     socket.on("gameCreated", gameCreated);

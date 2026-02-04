@@ -10,10 +10,13 @@ export default function NumberTicker({
   style = {},
   decimals = 0,
 }) {
-  const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
-  const safeStartValue = typeof startValue === 'number' && !isNaN(startValue) ? startValue : 0;
+  const parsedValue = typeof value === 'string' ? parseFloat(value) : value;
+  const parsedStartValue = typeof startValue === 'string' ? parseFloat(startValue) : startValue;
 
-  const [displayValue, setDisplayValue] = useState(direction === "down" ? safeValue : safeStartValue);
+  const safeValue = typeof parsedValue === 'number' && !isNaN(parsedValue) ? parsedValue : 0;
+  const safeStartValue = typeof parsedStartValue === 'number' && !isNaN(parsedStartValue) ? parsedStartValue : 0;
+
+  const [displayValue, setDisplayValue] = useState(safeStartValue);
   const animationRef = useRef(null);
   const previousValueRef = useRef(null);
   const isFirstRender = useRef(true);
@@ -60,7 +63,7 @@ export default function NumberTicker({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [safeValue, direction, delay]);
+  }, [safeValue, safeStartValue, direction, delay]);
 
   const safeDisplayValue = typeof displayValue === 'number' && !isNaN(displayValue) ? displayValue : safeStartValue;
 

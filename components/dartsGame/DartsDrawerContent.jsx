@@ -28,7 +28,7 @@ const DartsDrawerContent = (props) => {
   }
 
   const handleQuit = async () => {
-    const updatedGame = { ...game }; c
+    const updatedGame = { ...game };
     updatedGame.active = false;
     updatedGame.podium[1] = null;
 
