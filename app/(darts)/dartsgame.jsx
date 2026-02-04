@@ -1,6 +1,5 @@
 import { Text, View, AppState } from 'react-native'
 import { useContext, useState, useRef } from 'react'
-import CustomButton from '../../components/Custom/CustomButton'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
@@ -13,6 +12,7 @@ import LoadingScreen from '../../components/LoadingScreen'
 import { getDartsGame } from '../../lib/fetch'
 import { DrawerActions } from '@react-navigation/native'
 import { IconButton } from 'react-native-paper'
+import NumberTicker from '../../components/Custom/NumberTicker';
 
 const DartsGame = () => {
   useKeepAwake();
@@ -20,7 +20,7 @@ const DartsGame = () => {
   const navigation = useNavigation();
   const appState = useRef(AppState.currentState);
 
-  const { game, setGame } = useContext(DartsGameContext);
+  const { game, setGame, overthrow } = useContext(DartsGameContext);
 
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,6 +109,8 @@ const DartsGame = () => {
 
   if (!game || !currentUser) return <LoadingScreen text="Loading game..." />
 
+  const isOverthrow = overthrow === currentUser.displayName;
+
   return (
     <SafeAreaView className="h-full bg-black">
       <View className="w-full h-full flex flex-col items-center justify-evenly">
@@ -122,7 +124,12 @@ const DartsGame = () => {
         <Text className="font-pregular text-white text-xl absolute top-2 left-2">Round: {game.round}</Text>
         <View className="flex flex-col items-center">
           <Text className="font-pregular text-white text-3xl">{currentUser.displayName}</Text>
-          <Text className="font-pbold text-white text-2xl mt-2">{currentUser.points}</Text>
+          <NumberTicker
+            value={currentUser.points}
+            startValue={game.startPoints}
+            className="font-pbold text-2xl mt-2"
+            style={{ color: isOverthrow ? '#E00000' : 'white' }}
+          />
           <View className="flex flex-row w-44 justify-between mt-2">
             <View className="flex flex-col items-center">
               <Text className="font-psemibold text-white text-xl">T1</Text>

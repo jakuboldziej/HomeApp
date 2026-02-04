@@ -23,6 +23,7 @@ const ensureGameRecord = (gameData) => {
 
 export const DartsGameProvider = ({ children }) => {
   const [game, setGame] = useState(null);
+  const [overthrow, setOverthrow] = useState(false);
   const { user } = useContext(AuthContext);
   const [isSocketReady, setIsSocketReady] = useState(false);
   const gameRef = useRef(null);
@@ -142,19 +143,26 @@ export const DartsGameProvider = ({ children }) => {
       }
     };
 
+    const handleOverthrow = (userDisplayName) => {
+      setOverthrow(userDisplayName);
+      setTimeout(() => setOverthrow(false), 2000);
+    };
+
     socket.on("gameCreated", gameCreated);
     socket.on('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
     socket.on('reconnect', handleReconnect);
+    socket.on('userOverthrowClient', handleOverthrow);
 
     return () => {
       socket.off('gameCreated', gameCreated);
       socket.off('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
       socket.off('reconnect', handleReconnect);
+      socket.off('userOverthrowClient', handleOverthrow);
     }
   }, [isSocketReady, user]);
 
   return (
-    <DartsGameContext.Provider value={{ game, setGame }}>
+    <DartsGameContext.Provider value={{ game, setGame, overthrow, setOverthrow }}>
       {children}
     </DartsGameContext.Provider>
   )
