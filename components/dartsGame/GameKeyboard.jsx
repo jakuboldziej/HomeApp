@@ -1,10 +1,8 @@
-import { View } from 'react-native';
-import React, { useContext, useState, useRef } from 'react';
+import { View, useWindowDimensions } from 'react-native';
+import React, { useContext, useState, useRef, useMemo } from 'react';
 import CustomButton from '../Custom/CustomButton';
 import { DartsGameContext } from '../../context/DartsGameContext';
 import { socket } from '../../lib/socketio';
-
-const inputTailwind = "bg-creamy rounded-[25px] m-0.5";
 
 const GameKeyboard = () => {
   const { game, setGame } = useContext(DartsGameContext);
@@ -12,6 +10,22 @@ const GameKeyboard = () => {
   const pendingRequest = useRef(false);
   const lastRequestTime = useRef(0);
   const minRequestInterval = 100;
+  const { width, height } = useWindowDimensions();
+
+  const sizes = useMemo(() => {
+    const isSmallScreen = height < 700;
+    const isNarrowScreen = width < 380;
+    const isVeryNarrowScreen = width < 340;
+
+    return {
+      numberButtonWidth: isNarrowScreen ? 'w-12' : isSmallScreen ? 'w-14' : 'w-16',
+      specialButtonFontSize: isVeryNarrowScreen ? 'text-xs' : isNarrowScreen ? 'text-xs' : 'text-base',
+      buttonMargin: isSmallScreen ? 'm-0.5' : 'm-0.5',
+      specialButtonSpacing: isSmallScreen ? 'pt-6' : 'pt-10',
+    };
+  }, [width, height]);
+
+  const inputTailwind = `bg-creamy rounded-[25px] ${sizes.buttonMargin}`;
 
   const handleClick = (input) => {
     const now = Date.now();
@@ -72,40 +86,40 @@ const GameKeyboard = () => {
   }
 
   const numbers = [];
-  for (let i = 1; i <= 20; i++) numbers.push(<CustomButton key={i} title={i} textStyles='w-16' containerStyle={inputTailwind} onPress={() => handleClick(i)} />);
+  for (let i = 1; i <= 20; i++) numbers.push(<CustomButton key={i} title={i} textStyles={sizes.numberButtonWidth} containerStyle={inputTailwind} onPress={() => handleClick(i)} />);
 
   return (
     <View>
       <View className="flex flex-row flex-wrap justify-center">
         {numbers}
-        <CustomButton containerStyle={inputTailwind} textStyles='w-16' title="25" isDisabled={specialState[1] === "TRIPLE"} onPress={() => handleClick(25)} />
-        <CustomButton containerStyle={inputTailwind} textStyles='w-16' title="0" isDisabled={specialState[0]} onPress={() => handleClick(0)} />
+        <CustomButton containerStyle={inputTailwind} textStyles={sizes.numberButtonWidth} title="25" isDisabled={specialState[1] === "TRIPLE"} onPress={() => handleClick(25)} />
+        <CustomButton containerStyle={inputTailwind} textStyles={sizes.numberButtonWidth} title="0" isDisabled={specialState[0]} onPress={() => handleClick(0)} />
       </View>
-      <View className="flex flex-row flex-wrap justify-center pt-10">
+      <View className={`flex flex-row justify-center px-2 ${sizes.specialButtonSpacing}`}>
         <CustomButton
-          containerStyle={`${inputTailwind} bg-[#00B524]`}
-          textStyles='min-w-26'
+          containerStyle={`${inputTailwind} bg-[#00B524] flex-1`}
+          textStyles={sizes.specialButtonFontSize}
           title="DOORS"
           onPress={() => handleClick('DOORS')}
           isDisabled={handleDisabledSpecial('DOORS')}
         />
         <CustomButton
-          containerStyle={`${inputTailwind} ${specialState[1] === 'DOUBLE' ? 'bg-[#c4a100]' : 'bg-[#ffd100]'}`}
-          textStyles='min-w-26'
+          containerStyle={`${inputTailwind} ${specialState[1] === 'DOUBLE' ? 'bg-[#c4a100]' : 'bg-[#ffd100]'} flex-1`}
+          textStyles={sizes.specialButtonFontSize}
           title="DOUBLE"
           onPress={() => handleSpecialStateClick('DOUBLE')}
           isDisabled={handleDisabledSpecial('DOUBLE')}
         />
         <CustomButton
-          containerStyle={`${inputTailwind} ${specialState[1] === 'TRIPLE' ? 'bg-[#c96e02]' : 'bg-[#ff8a00]'}`}
-          textStyles='min-w-26'
+          containerStyle={`${inputTailwind} ${specialState[1] === 'TRIPLE' ? 'bg-[#c96e02]' : 'bg-[#ff8a00]'} flex-1`}
+          textStyles={sizes.specialButtonFontSize}
           title="TRIPLE"
           onPress={() => handleSpecialStateClick('TRIPLE')}
           isDisabled={handleDisabledSpecial('TRIPLE')}
         />
         <CustomButton
-          containerStyle={`${inputTailwind} bg-red`}
-          textStyles='min-w-26'
+          containerStyle={`${inputTailwind} bg-red flex-1`}
+          textStyles={sizes.specialButtonFontSize}
           title="BACK"
           onPress={() => handleClick('BACK')}
           isDisabled={handleDisabledSpecial('BACK')}

@@ -22,6 +22,15 @@ module.exports = {
         'creamy': '#F3F0D2',
         'red': '#E00000'
       },
+      width: {
+        '12': '48px',
+        '14': '56px',
+      },
+      minWidth: {
+        '20': '80px',
+        '22': '88px',
+        '26': '104px',
+      },
     },
   },
   plugins: [],

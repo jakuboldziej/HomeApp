@@ -39,7 +39,8 @@ const GameSummary = ({ visibleModal, hideModal }) => {
   }
 
   const totalThrows = (user) => {
-    return Object.values(user.currentThrows).reduce((acc, val) => acc + val, 0) - user.currentThrows["overthrows"];
+    if (!user?.currentThrows) return 0;
+    return Object.values(user.currentThrows).reduce((acc, val) => acc + val, 0) - (user.currentThrows["overthrows"] || 0);
   }
 
   const UserResultsTable = () => {
