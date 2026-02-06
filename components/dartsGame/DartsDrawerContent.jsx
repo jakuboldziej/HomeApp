@@ -44,7 +44,7 @@ const DartsDrawerContent = (props) => {
   return (
     <DrawerContentScrollView {...props}>
       <Drawer.Section
-        title="Game Actions"
+        title={`Game Actions (#${game?.gameCode})`}
         theme={{ colors: { onSurfaceVariant: 'white' } }}
       >
         <Drawer.Item

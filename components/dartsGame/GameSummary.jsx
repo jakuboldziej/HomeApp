@@ -92,34 +92,25 @@ const GameSummary = ({ visibleModal, hideModal }) => {
   }, []);
 
   useEffect(() => {
-    const playAgainButtonClient = (data) => {
-      const gameData = JSON.parse(data);
-
-      setGame(gameData);
-
-      socket.emit("joinLiveGamePreview", JSON.stringify({
-        gameCode: gameData.gameCode
-      }));
-
+    if (game?.active && visibleModal) {
       hideModal();
     }
+  }, [game?.active, visibleModal, hideModal]);
 
+  useEffect(() => {
     const hostDisconnectedFromGameClient = () => {
       setIsPlayAgainDisabled(true);
     }
 
     const gameEndClient = (data) => {
       const endedGame = JSON.parse(data);
-
       setGame(endedGame);
     }
 
-    socket.on('playAgainButtonClient', playAgainButtonClient);
     socket.on("gameEndClient", gameEndClient);
     socket.on('hostDisconnectedFromGameClient', hostDisconnectedFromGameClient);
 
     return () => {
-      socket.off('playAgainButtonClient', playAgainButtonClient);
       socket.off("gameEndClient", gameEndClient);
       socket.off('hostDisconnectedFromGameClient', hostDisconnectedFromGameClient);
     }

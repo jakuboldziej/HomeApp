@@ -3,7 +3,7 @@ import { useContext, useState, useRef, useMemo } from 'react'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
-import { socket, ensureSocketConnection } from '../../lib/socketio'
+import { socket, ensureSocketConnection, trackRoom } from '../../lib/socketio'
 import { DartsGameContext } from '../../context/DartsGameContext'
 import GameKeyboard from '../../components/dartsGame/GameKeyboard'
 import GameSummary from '../../components/dartsGame/GameSummary'
@@ -49,6 +49,8 @@ const DartsGame = () => {
   const showModal = () => setVisibleModal(true);
   const hideModal = () => setVisibleModal(false);
 
+  const hasInitializedRef = useRef(false);
+
   useEffect(() => {
     let mounted = true;
 
@@ -60,12 +62,18 @@ const DartsGame = () => {
     });
 
     const initializeGame = async () => {
+      if (hasInitializedRef.current) {
+        return;
+      }
+
       try {
         const parsedGame = JSON.parse(params.game);
+        hasInitializedRef.current = true;
 
         await ensureSocketConnection();
 
         if (mounted) {
+          trackRoom(parsedGame.gameCode);
           socket.emit("joinLiveGamePreview", JSON.stringify({
             gameCode: parsedGame.gameCode
           }));
@@ -88,15 +96,16 @@ const DartsGame = () => {
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
         console.log('DartsGame: App came to foreground, refreshing game state...');
 
-        if (game && game.gameCode) {
+        const currentGame = game;
+        if (currentGame && currentGame.gameCode) {
           try {
             await ensureSocketConnection();
 
             socket.emit("joinLiveGamePreview", JSON.stringify({
-              gameCode: game.gameCode
+              gameCode: currentGame.gameCode
             }));
 
-            const freshGame = await getDartsGame(game._id);
+            const freshGame = await getDartsGame(currentGame._id);
             if (freshGame && mounted) {
               setGame(freshGame);
               console.log('DartsGame: Game state refreshed from database');
@@ -113,7 +122,7 @@ const DartsGame = () => {
       mounted = false;
       subscription.remove();
     };
-  }, [game?.gameCode, game?._id]);
+  }, []);
 
   useEffect(() => {
     if (!game || isLoading) return;
@@ -129,7 +138,7 @@ const DartsGame = () => {
     }
 
     const currentUserIndex = game.users.findIndex((user) => user.displayName === game.turn);
-    
+
     if (currentUserIndex === -1) {
       console.warn('DartsGame: Current turn user not found, using first user');
       setCurrentUser(game.users[0]);

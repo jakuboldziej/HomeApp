@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, useContext, useRef } from "react";
-import { socket, ensureSocketConnection } from "../lib/socketio";
+import { socket, ensureSocketConnection, trackRoom, untrackRoom } from "../lib/socketio";
 import { router } from 'expo-router'
 import { AuthContext } from '../context/AuthContext';
 import { getDartsGame } from '../lib/fetch';
@@ -55,6 +55,7 @@ export const DartsGameProvider = ({ children }) => {
 
       const currentGame = gameRef.current;
       if (currentGame && currentGame.gameCode) {
+        trackRoom(currentGame.gameCode);
         socket.emit("joinLiveGamePreview", JSON.stringify({
           gameCode: currentGame.gameCode
         }));
@@ -94,10 +95,33 @@ export const DartsGameProvider = ({ children }) => {
         if (JSON.stringify(currentGame) === JSON.stringify(gameData)) {
           return;
         }
+        const gameWithRecord = ensureGameRecord(gameData);
+        setGame(gameWithRecord);
+      }
+    }
+
+    const playAgainButtonClient = async (data) => {
+      const newGameData = JSON.parse(data);
+      const currentGame = gameRef.current;
+
+      await ensureSocketConnection();
+
+      if (currentGame && currentGame.gameCode && currentGame.gameCode !== newGameData.gameCode) {
+        untrackRoom(currentGame.gameCode);
+        socket.emit("leaveLiveGamePreview", JSON.stringify({
+          gameCode: currentGame.gameCode
+        }));
       }
 
-      const gameWithRecord = ensureGameRecord(gameData);
+      const gameWithRecord = ensureGameRecord(newGameData);
       setGame(gameWithRecord);
+
+      setTimeout(() => {
+        trackRoom(newGameData.gameCode);
+        socket.emit("joinLiveGamePreview", JSON.stringify({
+          gameCode: newGameData.gameCode
+        }));
+      }, 100);
     }
 
     const handleReconnect = async () => {
@@ -110,11 +134,13 @@ export const DartsGameProvider = ({ children }) => {
           const gameWithRecord = ensureGameRecord(freshGame);
           setGame(gameWithRecord);
 
+          trackRoom(currentGame.gameCode);
           socket.emit("joinLiveGamePreview", JSON.stringify({
             gameCode: currentGame.gameCode
           }));
         } catch (error) {
           console.error('Failed to restore game from database:', error);
+          trackRoom(currentGame.gameCode);
           socket.emit("joinLiveGamePreview", JSON.stringify({
             gameCode: currentGame.gameCode
           }));
@@ -130,11 +156,13 @@ export const DartsGameProvider = ({ children }) => {
         const currentGame = gameRef.current;
 
         if (currentGame && currentGame.gameCode && currentGame.active !== false) {
+          untrackRoom(currentGame.gameCode);
           socket.emit('leaveLiveGamePreview', JSON.stringify({ gameCode: currentGame.gameCode }));
         }
 
         setGame(gameWithRecord);
 
+        trackRoom(newGame.gameCode);
         socket.emit("joinLiveGamePreview", JSON.stringify({
           gameCode: newGame.gameCode
         }));
@@ -150,12 +178,14 @@ export const DartsGameProvider = ({ children }) => {
 
     socket.on("gameCreated", gameCreated);
     socket.on('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
+    socket.on('playAgainButtonClient', playAgainButtonClient);
     socket.on('reconnect', handleReconnect);
     socket.on('userOverthrowClient', handleOverthrow);
 
     return () => {
       socket.off('gameCreated', gameCreated);
       socket.off('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
+      socket.off('playAgainButtonClient', playAgainButtonClient);
       socket.off('reconnect', handleReconnect);
       socket.off('userOverthrowClient', handleOverthrow);
     }
