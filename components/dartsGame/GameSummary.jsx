@@ -31,7 +31,7 @@ const GameSummary = ({ visibleModal, hideModal }) => {
     try {
       await ensureSocketConnection();
       socket.emit("externalKeyboardPlayAgain", JSON.stringify({
-        gameCode: game.gameCode
+        gameData: game
       }));
     } catch (error) {
       console.error('Failed to send play again:', error);
