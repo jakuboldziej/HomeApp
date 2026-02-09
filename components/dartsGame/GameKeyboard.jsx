@@ -1,11 +1,11 @@
 import { View, useWindowDimensions } from 'react-native';
-import React, { useContext, useState, useRef, useMemo } from 'react';
+import { useContext, useState, useRef, useMemo } from 'react';
 import CustomButton from '../Custom/CustomButton';
 import { DartsGameContext } from '../../context/DartsGameContext';
 import { socket } from '../../lib/socketio';
 
 const GameKeyboard = () => {
-  const { game, setGame } = useContext(DartsGameContext);
+  const { game } = useContext(DartsGameContext);
   const [specialState, setSpecialState] = useState([false, ""]);
   const pendingRequest = useRef(false);
   const lastRequestTime = useRef(0);
@@ -19,7 +19,7 @@ const GameKeyboard = () => {
 
     return {
       numberButtonWidth: isNarrowScreen ? 'w-12' : isSmallScreen ? 'w-14' : 'w-16',
-      specialButtonFontSize: isVeryNarrowScreen ? 'text-xs' : isNarrowScreen ? 'text-xs' : 'text-base',
+      specialButtonFontSize: isVeryNarrowScreen ? 'text-xs' : isNarrowScreen ? 'text-xs' : 'text-[3.5vw]',
       buttonMargin: isSmallScreen ? 'm-0.5' : 'm-0.5',
       specialButtonSpacing: isSmallScreen ? 'pt-6' : 'pt-10',
     };
@@ -86,14 +86,38 @@ const GameKeyboard = () => {
   }
 
   const numbers = [];
-  for (let i = 1; i <= 20; i++) numbers.push(<CustomButton key={i} title={i} textStyles={sizes.numberButtonWidth} containerStyle={inputTailwind} onPress={() => handleClick(i)} />);
+  for (let i = 1; i <= 20; i++) {
+    numbers.push(
+      <CustomButton
+        isKeyboard={true}
+        key={i}
+        title={i}
+        textStyles={sizes.numberButtonWidth}
+        containerStyle={inputTailwind}
+        onPress={() => handleClick(i)}
+      />
+    );
+  }
 
   return (
     <View>
       <View className="flex flex-row flex-wrap justify-center">
         {numbers}
-        <CustomButton containerStyle={inputTailwind} textStyles={sizes.numberButtonWidth} title="25" isDisabled={specialState[1] === "TRIPLE"} onPress={() => handleClick(25)} />
-        <CustomButton containerStyle={inputTailwind} textStyles={sizes.numberButtonWidth} title="0" isDisabled={specialState[0]} onPress={() => handleClick(0)} />
+        <CustomButton
+          containerStyle={inputTailwind}
+          textStyles={sizes.numberButtonWidth}
+          title="25" isDisabled={specialState[1] === "TRIPLE"}
+          onPress={() => handleClick(25)}
+          isKeyboard={true}
+        />
+        <CustomButton
+          containerStyle={inputTailwind}
+          textStyles={sizes.numberButtonWidth}
+          title="0"
+          isDisabled={specialState[0]}
+          onPress={() => handleClick(0)}
+          isKeyboard={true}
+        />
       </View>
       <View className={`flex flex-row justify-center px-2 ${sizes.specialButtonSpacing}`}>
         <CustomButton
@@ -102,6 +126,7 @@ const GameKeyboard = () => {
           title="DOORS"
           onPress={() => handleClick('DOORS')}
           isDisabled={handleDisabledSpecial('DOORS')}
+          isKeyboard={true}
         />
         <CustomButton
           containerStyle={`${inputTailwind} ${specialState[1] === 'DOUBLE' ? 'bg-[#c4a100]' : 'bg-[#ffd100]'} flex-1`}
@@ -109,6 +134,7 @@ const GameKeyboard = () => {
           title="DOUBLE"
           onPress={() => handleSpecialStateClick('DOUBLE')}
           isDisabled={handleDisabledSpecial('DOUBLE')}
+          isKeyboard={true}
         />
         <CustomButton
           containerStyle={`${inputTailwind} ${specialState[1] === 'TRIPLE' ? 'bg-[#c96e02]' : 'bg-[#ff8a00]'} flex-1`}
@@ -116,6 +142,7 @@ const GameKeyboard = () => {
           title="TRIPLE"
           onPress={() => handleSpecialStateClick('TRIPLE')}
           isDisabled={handleDisabledSpecial('TRIPLE')}
+          isKeyboard={true}
         />
         <CustomButton
           containerStyle={`${inputTailwind} bg-red flex-1`}
@@ -123,6 +150,7 @@ const GameKeyboard = () => {
           title="BACK"
           onPress={() => handleClick('BACK')}
           isDisabled={handleDisabledSpecial('BACK')}
+          isKeyboard={true}
         />
       </View>
     </View>

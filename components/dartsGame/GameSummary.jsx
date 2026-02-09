@@ -120,9 +120,9 @@ const GameSummary = ({ visibleModal, hideModal }) => {
     <CustomModal
       dismissable={false}
       visible={visibleModal}
-      contentContainerStyle={{ backgroundColor: 'black', padding: 20, margin: 10, width: "85%", height: '90%', borderRadius: 20 }}
+      contentContainerStyle={{ backgroundColor: 'black', padding: 20, margin: 10, width: "85%", height: '95%', borderRadius: 20 }}
     >
-      <ScrollView className="w-full h-full">
+      <ScrollView className="w-full h-full" contentContainerStyle={{ flex: 1 }}>
         <View className="w-full h-full flex flex-col items-center">
           <CustomButton title="Leave" textStyles="text-sm px-4" containerStyle="h-12 p-0 bg-red absolute top-2 right-2 z-10" onPress={() => handleGameLeave()} />
           <Text className="text-white font-pregular text-2xl mt-16">Game Summary</Text>
