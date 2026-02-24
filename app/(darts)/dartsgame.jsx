@@ -13,6 +13,7 @@ import { getDartsGame } from '../../lib/fetch'
 import { DrawerActions } from '@react-navigation/native'
 import { IconButton } from 'react-native-paper'
 import NumberTicker from '../../components/Custom/NumberTicker';
+import { AuthContext } from '../../context/AuthContext'
 
 const DartsGame = () => {
   useKeepAwake();
@@ -21,6 +22,7 @@ const DartsGame = () => {
   const appState = useRef(AppState.currentState);
   const { width, height } = useWindowDimensions();
 
+  const { user } = useContext(AuthContext);
   const { game, setGame, overthrow } = useContext(DartsGameContext);
 
   const [currentUser, setCurrentUser] = useState(null);
@@ -28,6 +30,8 @@ const DartsGame = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [visibleModal, setVisibleModal] = useState(false);
+
+  const isCurrentUserInGame = game && user && game.users.find((u) => u.displayName === user.displayName);
 
   const sizes = useMemo(() => {
     const isSmallScreen = height < 700;
@@ -209,8 +213,13 @@ const DartsGame = () => {
         </View>
 
         <View>
-          <GameKeyboard />
+          {isCurrentUserInGame ? (
+            <GameKeyboard />
+          ) : (
+            <Text className="text-white/50">Spectating mode</Text>
+          )}
         </View>
+
         <GameSummary visibleModal={visibleModal} hideModal={hideModal} />
       </View>
     </SafeAreaView>

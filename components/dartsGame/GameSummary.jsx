@@ -6,12 +6,17 @@ import { socket, ensureSocketConnection } from '../../lib/socketio';
 import { useContext } from 'react';
 import { DartsGameContext } from '../../context/DartsGameContext';
 import CustomButton from '../../components/Custom/CustomButton';
+import { AuthContext } from '../../context/AuthContext';
 
 const GameSummary = ({ visibleModal, hideModal }) => {
   const { game, setGame } = useContext(DartsGameContext);
+  const { user } = useContext(AuthContext);
+
   const navigation = useNavigation();
 
   const [isPlayAgainDisabled, setIsPlayAgainDisabled] = useState(false);
+
+  const isCurrentUserInGame = game && user && game.users.find((u) => u.displayName === user.displayName);
 
   useEffect(() => {
     if (visibleModal) {
@@ -178,7 +183,7 @@ const GameSummary = ({ visibleModal, hideModal }) => {
             <Text className='font-pregular text-sm text-slate-400 text-center'>
               {!isPlayAgainDisabled ? "Wait until host clicks play again button or" : "Host disconnected from the game"}
             </Text>
-            <CustomButton containerStyle="mt-5 bg-white" onPress={() => handlePlayAgain()} isDisabled={isPlayAgainDisabled} title="Play again" />
+            <CustomButton containerStyle="mt-5 bg-white" onPress={() => handlePlayAgain()} isDisabled={isPlayAgainDisabled || !isCurrentUserInGame} title="Play again" />
           </View>
         </View>
       </ScrollView>
