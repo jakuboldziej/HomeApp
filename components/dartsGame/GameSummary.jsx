@@ -2,14 +2,14 @@ import { View, Text, ScrollView } from 'react-native'
 import CustomModal from '../Custom/CustomModal';
 import { useEffect, useState } from 'react'
 import { router, useNavigation } from 'expo-router';
-import { socket, ensureSocketConnection, untrackRoom } from '../../lib/socketio';
+import { socket, ensureSocketConnection } from '../../lib/socketio';
 import { useContext } from 'react';
 import { DartsGameContext } from '../../context/DartsGameContext';
 import CustomButton from '../../components/Custom/CustomButton';
 import { AuthContext } from '../../context/AuthContext';
 
 const GameSummary = ({ visibleModal, hideModal }) => {
-  const { game, setGame } = useContext(DartsGameContext);
+  const { game, setGame, noMoreMatches } = useContext(DartsGameContext);
   const { user } = useContext(AuthContext);
 
   const navigation = useNavigation();
@@ -210,8 +210,8 @@ const GameSummary = ({ visibleModal, hideModal }) => {
             <CustomButton
               containerStyle="mt-5 bg-white"
               onPress={() => handleNextGame()}
-              isDisabled={isCurrentRoundFinished || !canUserInteract}
-              title="Next Game"
+              isDisabled={noMoreMatches || isCurrentRoundFinished || !canUserInteract}
+              title={noMoreMatches || isCurrentRoundFinished ? "Tournament Finished" : "Next game"}
             />
           )}
         </View>

@@ -22,10 +22,13 @@ const ensureGameRecord = (gameData) => {
 };
 
 export const DartsGameProvider = ({ children }) => {
+  const { user } = useContext(AuthContext);
+
   const [game, setGame] = useState(null);
   const [overthrow, setOverthrow] = useState(false);
-  const { user } = useContext(AuthContext);
   const [isSocketReady, setIsSocketReady] = useState(false);
+  const [noMoreMatches, setNoMoreMatches] = useState(false);
+
   const gameRef = useRef(null);
 
   useEffect(() => {
@@ -203,12 +206,17 @@ export const DartsGameProvider = ({ children }) => {
       }, 100);
     };
 
+    const tournamentNoNextGame = async () => {
+      setNoMoreMatches(true);
+    }
+
     socket.on("gameCreated", gameCreated);
     socket.on("updateLiveGamePreviewClient", updateLiveGamePreviewClient);
     socket.on("playAgainButtonClient", playAgainButtonClient);
     socket.on("reconnect", handleReconnect);
     socket.on("userOverthrowClient", handleOverthrow);
     socket.on("tournament:nextGame", tournamentNextGameLoaded);
+    socket.on("tournament:noNextGame", tournamentNoNextGame);
 
     return () => {
       game && untrackRoom(game.gameCode)
@@ -218,19 +226,21 @@ export const DartsGameProvider = ({ children }) => {
       socket.off("reconnect", handleReconnect);
       socket.off("userOverthrowClient", handleOverthrow);
       socket.off("tournament:nextGame", tournamentNextGameLoaded);
+      socket.off("tournament:noNextGame", tournamentNoNextGame);
     }
+
   }, [isSocketReady, user]);
 
   if (!user) {
     return (
-      <DartsGameContext.Provider value={{ game: null, setGame, overthrow, setOverthrow }}>
+      <DartsGameContext.Provider value={{ game: null, setGame, overthrow, setOverthrow, noMoreMatches }}>
         {children}
       </DartsGameContext.Provider>
     );
   }
 
   return (
-    <DartsGameContext.Provider value={{ game, setGame, overthrow, setOverthrow }}>
+    <DartsGameContext.Provider value={{ game, setGame, overthrow, setOverthrow, noMoreMatches }}>
       {children}
     </DartsGameContext.Provider>
   )
