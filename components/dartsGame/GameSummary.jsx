@@ -2,7 +2,7 @@ import { View, Text, ScrollView } from 'react-native'
 import CustomModal from '../Custom/CustomModal';
 import { useEffect, useState } from 'react'
 import { router, useNavigation } from 'expo-router';
-import { socket, ensureSocketConnection } from '../../lib/socketio';
+import { socket, ensureSocketConnection, untrackRoom } from '../../lib/socketio';
 import { useContext } from 'react';
 import { DartsGameContext } from '../../context/DartsGameContext';
 import CustomButton from '../../components/Custom/CustomButton';
@@ -16,7 +16,19 @@ const GameSummary = ({ visibleModal, hideModal }) => {
 
   const [isPlayAgainDisabled, setIsPlayAgainDisabled] = useState(false);
 
-  const isCurrentUserInGame = game && user && game.users.find((u) => u.displayName === user.displayName);
+  const canUserInteract =
+    game &&
+    user &&
+    (game.users.some(u => u.displayName === user.displayName) ||
+      game?.tournamentId?.admin === user?.displayName);
+
+  const currentMatch = game.tournamentId?.matches?.find(m => m.gameId === game._id);
+
+  const isCurrentRoundFinished = currentMatch
+    ? game.tournamentId.matches
+      .filter(m => m.round === currentMatch.round)
+      .every(m => m.status === 'completed')
+    : false;
 
   useEffect(() => {
     if (visibleModal) {
@@ -43,6 +55,18 @@ const GameSummary = ({ visibleModal, hideModal }) => {
     }
   }
 
+  const handleNextGame = async () => {
+    try {
+      await ensureSocketConnection();
+      socket.emit("tournamentNextGame", {
+        tournamentCode: game.tournamentId.tournamentCode,
+        currentGameCode: game.gameCode
+      });
+    } catch (error) {
+      console.error('Failed to send play again:', error);
+    }
+  }
+
   const totalThrows = (user) => {
     if (!user?.currentThrows) return 0;
     return Object.values(user.currentThrows).reduce((acc, val) => acc + val, 0) - (user.currentThrows["overthrows"] || 0);
@@ -55,8 +79,7 @@ const GameSummary = ({ visibleModal, hideModal }) => {
           <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">Player</Text>
           <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">Points</Text>
           <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">Throws</Text>
-          <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">HRP</Text>
-          <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">HAVG</Text>
+          <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">AVG</Text>
         </View>
 
         <ScrollView className="max-h-64">
@@ -75,10 +98,7 @@ const GameSummary = ({ visibleModal, hideModal }) => {
                 {totalThrows(user)}
               </Text>
               <Text className={`flex-1 font-pregular text-xs py-3 px-2 text-center ${game.userWon === user.displayName ? 'text-yellow-400' : 'text-white'}`}>
-                {user.highestGameTurnPoints}
-              </Text>
-              <Text className={`flex-1 font-pregular text-xs py-3 px-2 text-center ${game.userWon === user.displayName ? 'text-yellow-400' : 'text-white'}`}>
-                {user.highestGameAvg}
+                {user.avgPointsPerTurn}
               </Text>
             </View>
           ))}
@@ -179,12 +199,21 @@ const GameSummary = ({ visibleModal, hideModal }) => {
             <Text className='text-red font-pregular text-xl pt-5'>This game was abandoned</Text>
           )}
 
-          <View className='flex flex-col items-center mt-5 mb-4'>
-            <Text className='font-pregular text-sm text-slate-400 text-center'>
-              {!isPlayAgainDisabled ? "Wait until host clicks play again button or" : "Host disconnected from the game"}
-            </Text>
-            <CustomButton containerStyle="mt-5 bg-white" onPress={() => handlePlayAgain()} isDisabled={isPlayAgainDisabled || !isCurrentUserInGame} title="Play again" />
-          </View>
+          {!game.tournamentId ? (
+            <View className='flex flex-col items-center mt-5 mb-4'>
+              <Text className='font-pregular text-sm text-slate-400 text-center'>
+                {!isPlayAgainDisabled ? "Wait until host clicks play again button or" : "Host disconnected from the game"}
+              </Text>
+              <CustomButton containerStyle="mt-5 bg-white" onPress={() => handlePlayAgain()} isDisabled={isPlayAgainDisabled || !canUserInteract} title="Play again" />
+            </View>
+          ) : (
+            <CustomButton
+              containerStyle="mt-5 bg-white"
+              onPress={() => handleNextGame()}
+              isDisabled={isCurrentRoundFinished || !canUserInteract}
+              title="Next Game"
+            />
+          )}
         </View>
       </ScrollView>
     </CustomModal>

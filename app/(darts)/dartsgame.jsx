@@ -20,10 +20,11 @@ const DartsGame = () => {
   const params = useLocalSearchParams();
   const navigation = useNavigation();
   const appState = useRef(AppState.currentState);
-  const { width, height } = useWindowDimensions();
+  const { height } = useWindowDimensions();
 
   const { user } = useContext(AuthContext);
   const { game, setGame, overthrow } = useContext(DartsGameContext);
+  const gameRef = useRef(null);
 
   const [currentUser, setCurrentUser] = useState(null);
   const [nextUser, setNextUser] = useState(null);
@@ -31,7 +32,11 @@ const DartsGame = () => {
 
   const [visibleModal, setVisibleModal] = useState(false);
 
-  const isCurrentUserInGame = game && user && game.users.find((u) => u.displayName === user.displayName);
+  const canUserInteract =
+    game &&
+    user &&
+    (game.users.some(u => u.displayName === user.displayName) ||
+      game?.tournamentId?.admin === user?.displayName);
 
   const sizes = useMemo(() => {
     const isSmallScreen = height < 700;
@@ -56,6 +61,10 @@ const DartsGame = () => {
   const hasInitializedRef = useRef(false);
 
   useEffect(() => {
+    gameRef.current = game;
+  }, [game]);
+
+  useEffect(() => {
     let mounted = true;
 
     // Prevent back button
@@ -66,32 +75,37 @@ const DartsGame = () => {
     });
 
     const initializeGame = async () => {
-      if (hasInitializedRef.current) {
-        return;
-      }
+      if (hasInitializedRef.current) return;
 
       try {
-        const parsedGame = JSON.parse(params.game);
-        hasInitializedRef.current = true;
-
         await ensureSocketConnection();
 
-        if (mounted) {
+        if (gameRef.current) {
+          hasInitializedRef.current = true;
+          setIsLoading(false);
+          return;
+        }
+
+        if (params.game) {
+          const parsedGame = JSON.parse(params.game);
+          hasInitializedRef.current = true;
+
           trackRoom(parsedGame.gameCode);
-          socket.emit("joinLiveGamePreview", JSON.stringify({
-            gameCode: parsedGame.gameCode
-          }));
+          socket.emit("joinLiveGamePreview", JSON.stringify({ gameCode: parsedGame.gameCode }));
 
           setGame(parsedGame);
           setIsLoading(false);
+          return;
         }
+
+        router.replace("/darts");
+
       } catch (error) {
-        console.error('Failed to initialize game:', error);
-        if (mounted) {
-          router.replace("/darts");
-        }
+        console.error("Failed to initialize game:", error);
+        router.replace("/darts");
       }
     };
+
 
     initializeGame();
 
@@ -213,7 +227,7 @@ const DartsGame = () => {
         </View>
 
         <View>
-          {isCurrentUserInGame ? (
+          {canUserInteract ? (
             <GameKeyboard />
           ) : (
             <Text className="text-white/50">Spectating mode</Text>

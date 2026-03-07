@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
 import { Drawer } from 'react-native-paper'
 import { DartsGameContext } from '../../context/DartsGameContext'
@@ -41,6 +41,16 @@ const DartsDrawerContent = (props) => {
     return isInitialGameState(game) || (game?.round === 1 && game?.users?.[0]?.turns?.[1] === null);
   }
 
+  if (!game) {
+    return (
+      <DrawerContentScrollView {...props}>
+        <Drawer.Section title="Game Actions">
+          <Drawer.Item label="No active game" />
+        </Drawer.Section>
+      </DrawerContentScrollView>
+    );
+  }
+
   return (
     <DrawerContentScrollView {...props}>
       <Drawer.Section
@@ -52,14 +62,14 @@ const DartsDrawerContent = (props) => {
           onPress={handleGameLeave}
           theme={{ colors: { onSurfaceVariant: '#E55555' } }}
         />
-        {game?.training && (
+        {game?.training && !game?.tournamentId && (
           <Drawer.Item
             label="End Training"
             onPress={handleEndTraining}
             theme={{ colors: { onSurfaceVariant: '#E55555' } }}
           />
         )}
-        {showQuitBtn() && (
+        {showQuitBtn() && !game?.tournamentId && (
           <Drawer.Item
             label="Quit Game"
             onPress={handleQuit}

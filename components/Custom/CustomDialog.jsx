@@ -1,4 +1,3 @@
-import React from 'react'
 import { Dialog, Portal } from 'react-native-paper'
 
 const CustomDialog = ({ children, visibleDialog }) => {

@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState, useContext, useRef } from "react";
 import { socket, ensureSocketConnection, trackRoom, untrackRoom } from "../lib/socketio";
-import { router } from 'expo-router'
-import { AuthContext } from '../context/AuthContext';
-import { getDartsGame } from '../lib/fetch';
+import { router } from "expo-router"
+import { AuthContext } from "../context/AuthContext";
+import { getDartsGame } from "../lib/fetch";
 
 export const DartsGameContext = createContext()
 
@@ -33,15 +33,15 @@ export const DartsGameProvider = ({ children }) => {
   }, [game]);
 
   useEffect(() => {
-    if (user && !socket.connected) {
+    if (!socket.connected) {
       ensureSocketConnection()
         .then(() => {
           setIsSocketReady(true);
         })
         .catch((error) => {
-          console.error('DartsGameContext: Failed to connect socket:', error);
+          console.error("DartsGameContext: Failed to connect socket:", error);
           setTimeout(() => {
-            if (user && !socket.connected) {
+            if (!socket.connected) {
               socket.connect();
             }
           }, 2000);
@@ -64,7 +64,7 @@ export const DartsGameProvider = ({ children }) => {
           const gameWithRecord = ensureGameRecord(freshGame);
           setGame(gameWithRecord);
         }).catch(error => {
-          console.error('Failed to fetch fresh game state:', error);
+          console.error("Failed to fetch fresh game state:", error);
         });
       }
     };
@@ -73,12 +73,12 @@ export const DartsGameProvider = ({ children }) => {
       setIsSocketReady(false);
     };
 
-    socket.on('connect', handleConnect);
-    socket.on('disconnect', handleDisconnect);
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
 
     return () => {
-      socket.off('connect', handleConnect);
-      socket.off('disconnect', handleDisconnect);
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
     };
   }, [user]);
 
@@ -139,7 +139,7 @@ export const DartsGameProvider = ({ children }) => {
             gameCode: currentGame.gameCode
           }));
         } catch (error) {
-          console.error('Failed to restore game from database:', error);
+          console.error("Failed to restore game from database:", error);
           trackRoom(currentGame.gameCode);
           socket.emit("joinLiveGamePreview", JSON.stringify({
             gameCode: currentGame.gameCode
@@ -157,7 +157,7 @@ export const DartsGameProvider = ({ children }) => {
 
         if (currentGame && currentGame.gameCode && currentGame.active !== false) {
           untrackRoom(currentGame.gameCode);
-          socket.emit('leaveLiveGamePreview', JSON.stringify({ gameCode: currentGame.gameCode }));
+          socket.emit("leaveLiveGamePreview", JSON.stringify({ gameCode: currentGame.gameCode }));
         }
 
         setGame(gameWithRecord);
@@ -167,7 +167,7 @@ export const DartsGameProvider = ({ children }) => {
           gameCode: newGame.gameCode
         }));
 
-        router.replace({ pathname: '(darts)/dartsgame', params: { game: JSON.stringify(gameWithRecord) } });
+        router.replace({ pathname: "(darts)/dartsgame", params: { game: JSON.stringify(gameWithRecord) } });
       }
     };
 
@@ -176,20 +176,58 @@ export const DartsGameProvider = ({ children }) => {
       setTimeout(() => setOverthrow(false), 1000);
     };
 
+    const tournamentNextGameLoaded = async (data) => {
+      const { nextGame } = data;
+
+      if (!nextGame) return;
+
+      const currentGame = gameRef.current;
+
+      await ensureSocketConnection();
+
+      if (currentGame && currentGame.gameCode && currentGame.gameCode !== nextGame.gameCode) {
+        untrackRoom(currentGame.gameCode);
+        socket.emit("leaveLiveGamePreview", JSON.stringify({
+          gameCode: currentGame.gameCode
+        }));
+      }
+
+      const gameWithRecord = ensureGameRecord(nextGame);
+      setGame(gameWithRecord);
+
+      setTimeout(() => {
+        trackRoom(nextGame.gameCode);
+        socket.emit("joinLiveGamePreview", JSON.stringify({
+          gameCode: nextGame.gameCode
+        }));
+      }, 100);
+    };
+
     socket.on("gameCreated", gameCreated);
-    socket.on('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
-    socket.on('playAgainButtonClient', playAgainButtonClient);
-    socket.on('reconnect', handleReconnect);
-    socket.on('userOverthrowClient', handleOverthrow);
+    socket.on("updateLiveGamePreviewClient", updateLiveGamePreviewClient);
+    socket.on("playAgainButtonClient", playAgainButtonClient);
+    socket.on("reconnect", handleReconnect);
+    socket.on("userOverthrowClient", handleOverthrow);
+    socket.on("tournament:nextGame", tournamentNextGameLoaded);
 
     return () => {
-      socket.off('gameCreated', gameCreated);
-      socket.off('updateLiveGamePreviewClient', updateLiveGamePreviewClient);
-      socket.off('playAgainButtonClient', playAgainButtonClient);
-      socket.off('reconnect', handleReconnect);
-      socket.off('userOverthrowClient', handleOverthrow);
+      game && untrackRoom(game.gameCode)
+      socket.off("gameCreated", gameCreated);
+      socket.off("updateLiveGamePreviewClient", updateLiveGamePreviewClient);
+      socket.off("playAgainButtonClient", playAgainButtonClient);
+      socket.off("reconnect", handleReconnect);
+      socket.off("userOverthrowClient", handleOverthrow);
+      socket.off("tournament:nextGame", tournamentNextGameLoaded);
     }
   }, [isSocketReady, user]);
+
+  if (!user) {
+    return (
+      <DartsGameContext.Provider value={{ game: null, setGame, overthrow, setOverthrow }}>
+        {children}
+      </DartsGameContext.Provider>
+    );
+  }
 
   return (
     <DartsGameContext.Provider value={{ game, setGame, overthrow, setOverthrow }}>
