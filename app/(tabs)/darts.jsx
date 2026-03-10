@@ -6,7 +6,7 @@ import { router } from 'expo-router'
 import { getDartsGame } from '../../lib/fetch'
 import { TextInput } from 'react-native-paper'
 import CustomSnackBar from '../../components/Custom/CustomSnackBar'
-import { socket, ensureSocketConnection } from '../../lib/socketio'
+import { ensureSocketConnection } from '../../lib/socketio'
 
 const Darts = () => {
   const [gameCode, setGameCode] = useState('');
@@ -30,7 +30,7 @@ const Darts = () => {
       const gameResponse = await getDartsGame(gameCode);
 
       if (!gameResponse.message) {
-        router.replace({ pathname: '(darts)/dartsgame', params: { game: JSON.stringify(gameResponse) } });
+        router.replace({ pathname: '(darts)/dartsgame', params: { gameCode: gameResponse.gameCode } });
       } else {
         setSnackMessage(gameResponse.message || 'Game code is wrong');
         setVisibleSnack(true);

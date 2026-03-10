@@ -198,7 +198,6 @@ export const DartsGameProvider = ({ children }) => {
       const { game: newGame, userDisplayNames } = JSON.parse(data);
 
       if (user && userDisplayNames.includes(user?.displayName)) {
-        const gameWithRecord = ensureGameRecord(newGame);
         const currentGame = gameRef.current;
 
         if (currentGame && currentGame.gameCode && currentGame.active !== false) {
@@ -206,14 +205,14 @@ export const DartsGameProvider = ({ children }) => {
           socket.emit("leaveLiveGamePreview", JSON.stringify({ gameCode: currentGame.gameCode }));
         }
 
-        setGame(gameWithRecord);
+        setGame(newGame);
 
         trackRoom(newGame.gameCode);
         socket.emit("joinLiveGamePreview", JSON.stringify({
           gameCode: newGame.gameCode
         }));
 
-        router.replace({ pathname: "(darts)/dartsgame", params: { game: JSON.stringify(gameWithRecord) } });
+        router.replace({ pathname: "(darts)/dartsgame", params: { gameCode: newGame.gameCode } });
       }
     };
 
