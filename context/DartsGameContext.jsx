@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useContext, useRef } from "react";
+import { createContext, useEffect, useState, useContext, useRef, useCallback } from "react";
 import { socket, ensureSocketConnection, trackRoom, untrackRoom } from "../lib/socketio";
 import { router } from "expo-router"
 import { AuthContext } from "../context/AuthContext";
@@ -27,13 +27,56 @@ export const DartsGameProvider = ({ children }) => {
   const [game, setGame] = useState(null);
   const [overthrow, setOverthrow] = useState(false);
   const [isSocketReady, setIsSocketReady] = useState(false);
-  const [noMoreMatches, setNoMoreMatches] = useState(false);
+
+  const [specialState, setSpecialState] = useState([false, ""]);
+  const pendingRequest = useRef(false);
+  const lastRequestTime = useRef(0);
+  const minRequestInterval = 100;
 
   const gameRef = useRef(null);
 
   useEffect(() => {
     gameRef.current = game;
   }, [game]);
+
+  const handleClick = useCallback((input) => {
+    const currentGame = gameRef.current;
+    if (!currentGame) return;
+
+    const now = Date.now();
+    if (pendingRequest.current || (now - lastRequestTime.current) < minRequestInterval) {
+      console.warn('Request throttled - too fast');
+      return;
+    }
+
+    pendingRequest.current = true;
+    lastRequestTime.current = now;
+
+    const currentAction = specialState[0] ? specialState[1] : null;
+    const shouldClearSpecialState = specialState[0];
+
+    try {
+      if (currentAction) {
+        socket.emit("externalKeyboardInput", JSON.stringify({
+          input: input,
+          action: currentAction,
+          gameCode: currentGame.gameCode
+        }));
+        if (shouldClearSpecialState) {
+          setSpecialState([false, ""]);
+        }
+      } else {
+        socket.emit("externalKeyboardInput", JSON.stringify({
+          input: input,
+          gameCode: currentGame.gameCode
+        }));
+      }
+    } finally {
+      setTimeout(() => {
+        pendingRequest.current = false;
+      }, minRequestInterval);
+    }
+  }, [specialState]);
 
   useEffect(() => {
     if (!socket.connected) {
@@ -206,17 +249,12 @@ export const DartsGameProvider = ({ children }) => {
       }, 100);
     };
 
-    const tournamentNoNextGame = async () => {
-      setNoMoreMatches(true);
-    }
-
     socket.on("gameCreated", gameCreated);
     socket.on("updateLiveGamePreviewClient", updateLiveGamePreviewClient);
     socket.on("playAgainButtonClient", playAgainButtonClient);
     socket.on("reconnect", handleReconnect);
     socket.on("userOverthrowClient", handleOverthrow);
     socket.on("tournament:nextGame", tournamentNextGameLoaded);
-    socket.on("tournament:noNextGame", tournamentNoNextGame);
 
     return () => {
       game && untrackRoom(game.gameCode)
@@ -226,21 +264,30 @@ export const DartsGameProvider = ({ children }) => {
       socket.off("reconnect", handleReconnect);
       socket.off("userOverthrowClient", handleOverthrow);
       socket.off("tournament:nextGame", tournamentNextGameLoaded);
-      socket.off("tournament:noNextGame", tournamentNoNextGame);
     }
 
   }, [isSocketReady, user]);
 
+  const contextValue = {
+    game,
+    setGame,
+    overthrow,
+    setOverthrow,
+    specialState,
+    setSpecialState,
+    handleClick
+  };
+
   if (!user) {
     return (
-      <DartsGameContext.Provider value={{ game: null, setGame, overthrow, setOverthrow, noMoreMatches }}>
+      <DartsGameContext.Provider value={{ ...contextValue, game: null }}>
         {children}
       </DartsGameContext.Provider>
     );
   }
 
   return (
-    <DartsGameContext.Provider value={{ game, setGame, overthrow, setOverthrow, noMoreMatches }}>
+    <DartsGameContext.Provider value={contextValue}>
       {children}
     </DartsGameContext.Provider>
   )

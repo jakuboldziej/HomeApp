@@ -1,20 +1,23 @@
 import { View, Text, ScrollView } from 'react-native'
 import CustomModal from '../Custom/CustomModal';
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { router, useNavigation } from 'expo-router';
 import { socket, ensureSocketConnection } from '../../lib/socketio';
 import { useContext } from 'react';
 import { DartsGameContext } from '../../context/DartsGameContext';
 import CustomButton from '../../components/Custom/CustomButton';
 import { AuthContext } from '../../context/AuthContext';
+import { getDartsTournament } from '../../lib/fetch';
 
 const GameSummary = ({ visibleModal, hideModal }) => {
-  const { game, setGame, noMoreMatches } = useContext(DartsGameContext);
+  const { game, setGame, handleClick } = useContext(DartsGameContext);
   const { user } = useContext(AuthContext);
 
   const navigation = useNavigation();
 
   const [isPlayAgainDisabled, setIsPlayAgainDisabled] = useState(false);
+  const [tournamentMatches, setTournamentMatches] = useState([]);
+  const [tournamentStatus, setTournamentStatus] = useState("");
 
   const canUserInteract =
     game &&
@@ -22,13 +25,32 @@ const GameSummary = ({ visibleModal, hideModal }) => {
     (game.users.some(u => u.displayName === user.displayName) ||
       game?.tournamentId?.admin === user?.displayName);
 
-  const currentMatch = game.tournamentId?.matches?.find(m => m.gameId === game._id);
+  const currentMatch = tournamentMatches.length > 0 && tournamentMatches.find(m => String(m.gameId?._id) === String(game._id));
 
   const isCurrentRoundFinished = currentMatch
-    ? game.tournamentId.matches
+    ? tournamentMatches
       .filter(m => m.round === currentMatch.round)
-      .every(m => m.status === 'completed')
+      .every(m => m.status === "completed")
     : false;
+
+  const isTournamentOver = isCurrentRoundFinished && tournamentStatus === "completed";
+
+
+  const fetchTournamentData = useCallback(async () => {
+    try {
+      const response = await getDartsTournament(game.tournamentId._id);
+      setTournamentMatches(response.matches);
+      setTournamentStatus(response.status);
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  useEffect(() => {
+    if (game?.tournamentId?._id) {
+      fetchTournamentData();
+    }
+  }, [game?.tournamentId?._id]);
 
   useEffect(() => {
     if (visibleModal) {
@@ -53,6 +75,27 @@ const GameSummary = ({ visibleModal, hideModal }) => {
     } catch (error) {
       console.error('Failed to send play again:', error);
     }
+  }
+
+  const handleTournamentBack = async () => {
+    try {
+      handleClick("BACK");
+
+      await ensureSocketConnection();
+
+      socket.emit("tournamentBack", {
+        tournamentId: game.tournamentId._id,
+        matchId: currentMatch._id
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDisabledBack = () => {
+    if (game.training || game.podium[1] === null || (!game?.record || game.record.length <= 1)) return true;
+
+    if (game.tournamentId && isTournamentOver) return true;
   }
 
   const handleNextGame = async () => {
@@ -132,12 +175,18 @@ const GameSummary = ({ visibleModal, hideModal }) => {
       setGame(endedGame);
     }
 
+    const tournamentUpdated = async () => {
+      fetchTournamentData();
+    }
+
     socket.on("gameEndClient", gameEndClient);
     socket.on('hostDisconnectedFromGameClient', hostDisconnectedFromGameClient);
+    socket.on("tournamentUpdated", tournamentUpdated);
 
     return () => {
       socket.off("gameEndClient", gameEndClient);
       socket.off('hostDisconnectedFromGameClient', hostDisconnectedFromGameClient);
+      socket.off("tournamentUpdated", tournamentUpdated);
     }
   }, []);
 
@@ -207,12 +256,20 @@ const GameSummary = ({ visibleModal, hideModal }) => {
               <CustomButton containerStyle="mt-5 bg-white" onPress={() => handlePlayAgain()} isDisabled={isPlayAgainDisabled || !canUserInteract} title="Play again" />
             </View>
           ) : (
-            <CustomButton
-              containerStyle="mt-5 bg-white"
-              onPress={() => handleNextGame()}
-              isDisabled={noMoreMatches || isCurrentRoundFinished || !canUserInteract}
-              title={noMoreMatches || isCurrentRoundFinished ? "Tournament Finished" : "Next game"}
-            />
+            <>
+              <CustomButton
+                containerStyle="mt-5 bg-white"
+                onPress={() => handleNextGame()}
+                isDisabled={isTournamentOver || !canUserInteract}
+                title={isTournamentOver ? "Tournament Finished" : "Next game"}
+              />
+              <CustomButton
+                containerStyle="mt-5 bg-red"
+                onPress={() => handleTournamentBack()}
+                isDisabled={handleDisabledBack() || !canUserInteract}
+                title="Back"
+              />
+            </>
           )}
         </View>
       </ScrollView>

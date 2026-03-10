@@ -1,15 +1,10 @@
 import { View, useWindowDimensions } from 'react-native';
-import { useContext, useState, useRef, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import CustomButton from '../Custom/CustomButton';
 import { DartsGameContext } from '../../context/DartsGameContext';
-import { socket } from '../../lib/socketio';
 
 const GameKeyboard = () => {
-  const { game } = useContext(DartsGameContext);
-  const [specialState, setSpecialState] = useState([false, ""]);
-  const pendingRequest = useRef(false);
-  const lastRequestTime = useRef(0);
-  const minRequestInterval = 100;
+  const { game, specialState, setSpecialState, handleClick } = useContext(DartsGameContext);
   const { width, height } = useWindowDimensions();
 
   const sizes = useMemo(() => {
@@ -26,42 +21,6 @@ const GameKeyboard = () => {
   }, [width, height]);
 
   const inputTailwind = `bg-creamy rounded-[25px] ${sizes.buttonMargin}`;
-
-  const handleClick = (input) => {
-    const now = Date.now();
-    if (pendingRequest.current || (now - lastRequestTime.current) < minRequestInterval) {
-      console.warn('Request throttled - too fast');
-      return;
-    }
-
-    pendingRequest.current = true;
-    lastRequestTime.current = now;
-
-    const currentAction = specialState[0] ? specialState[1] : null;
-    const shouldClearSpecialState = specialState[0];
-
-    try {
-      if (currentAction) {
-        socket.emit("externalKeyboardInput", JSON.stringify({
-          input: input,
-          action: currentAction,
-          gameCode: game.gameCode
-        }));
-        if (shouldClearSpecialState) {
-          setSpecialState([false, ""]);
-        }
-      } else {
-        socket.emit("externalKeyboardInput", JSON.stringify({
-          input: input,
-          gameCode: game.gameCode
-        }));
-      }
-    } finally {
-      setTimeout(() => {
-        pendingRequest.current = false;
-      }, minRequestInterval);
-    }
-  }
 
   const handleSpecialStateClick = (input) => {
     if (input === "DOUBLE" || input === "TRIPLE") {
