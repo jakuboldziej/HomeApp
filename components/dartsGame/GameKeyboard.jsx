@@ -2,6 +2,7 @@ import { View, useWindowDimensions } from 'react-native';
 import { useContext, useMemo } from 'react';
 import CustomButton from '../Custom/CustomButton';
 import { DartsGameContext } from '../../context/DartsGameContext';
+import { isInitialGameState } from '../../lib/recordUtils';
 
 const GameKeyboard = () => {
   const { game, specialState, setSpecialState, handleClick } = useContext(DartsGameContext);
@@ -39,7 +40,7 @@ const GameKeyboard = () => {
       return specialState[1] === 'DOUBLE';
     }
     else if (type === 'BACK') {
-      return specialState[1] === 'DOUBLE' || specialState[1] === 'TRIPLE' || (game.round === 1 && game.users[0].turns[1] === null);
+      return specialState[1] === 'DOUBLE' || specialState[1] === 'TRIPLE' || isInitialGameState(game);
     }
     return specialState[1] === 'TRIPLE' || specialState[1] === 'DOUBLE' || specialState[1] === type;
   }

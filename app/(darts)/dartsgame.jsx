@@ -66,6 +66,8 @@ const DartsGame = () => {
     }
   }, [game])
 
+  const isAroundTheClock = game?.gameMode === "Around the Clock"
+
   const canUserInteract =
     game &&
     user &&
@@ -200,8 +202,8 @@ const DartsGame = () => {
           </Text>
 
           <NumberTicker
-            value={currentUser.points}
-            startValue={game.startPoints}
+            value={isAroundTheClock ? (currentUser.currentTarget || 1) : currentUser.points}
+            startValue={isAroundTheClock ? 1 : game.startPoints}
             className={`font-pbold ${sizes.currentPointsSize} ${sizes.spacing}`}
             style={{ color: isOverthrow ? '#E00000' : 'white' }}
           />
@@ -232,7 +234,7 @@ const DartsGame = () => {
               </Text>
 
               <Text className={`font-pregular text-gray-400 ${sizes.nextUserPointsSize} ml-2`}>
-                ({nextUser.points} pts)
+                {isAroundTheClock ? `(target ${nextUser.currentTarget || 1})` : `(${nextUser.points} pts)`}
               </Text>
             </View>
           )}

@@ -120,7 +120,7 @@ const GameSummary = ({ visibleModal, hideModal }) => {
       <View className="w-full mt-4 mb-4">
         <View className="flex-row bg-gray-800 border-b border-gray-600">
           <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">Player</Text>
-          <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">Points</Text>
+          <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">{game.gameMode === "Around the Clock" ? "Target" : "Points"}</Text>
           <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">Throws</Text>
           <Text className="flex-1 text-white font-psemibold text-xs py-2 px-2 text-center">AVG</Text>
         </View>
@@ -135,7 +135,7 @@ const GameSummary = ({ visibleModal, hideModal }) => {
                 {user.displayName}
               </Text>
               <Text className={`flex-1 font-pregular text-xs py-3 px-2 text-center ${game.userWon === user.displayName ? 'text-yellow-400' : 'text-white'}`}>
-                {game.startPoints - user.points}
+                {game.gameMode === "Around the Clock" ? (user.currentTarget || 1) : (game.startPoints - user.points)}
               </Text>
               <Text className={`flex-1 font-pregular text-xs py-3 px-2 text-center ${game.userWon === user.displayName ? 'text-yellow-400' : 'text-white'}`}>
                 {totalThrows(user)}
@@ -235,10 +235,12 @@ const GameSummary = ({ visibleModal, hideModal }) => {
               </View>
 
               <View className="flex flex-col items-center gap-2 mt-4">
-                <Text className="text-white font-pregular text-sm">Start Points: {game.startPoints}</Text>
+                {game.gameMode !== "Around the Clock" && (
+                  <Text className="text-white font-pregular text-sm">Start Points: {game.startPoints}</Text>
+                )}
                 <Text className="text-white font-pregular text-sm">
                   Gamemode: {game.gameMode}
-                  {game.gameMode === "X01" && ` | Legs: ${game.legs} | Sets: ${game.sets}`}
+                  {(game.gameMode === "X01" || game.gameMode === "Around the Clock") && ` | Legs: ${game.legs} | Sets: ${game.sets}`}
                 </Text>
               </View>
 

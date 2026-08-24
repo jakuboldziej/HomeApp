@@ -1,5 +1,5 @@
 import { View, Text, ScrollView } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import CustomButton from '../../components/Custom/CustomButton'
 import { router } from 'expo-router'
@@ -7,6 +7,7 @@ import { getDartsGame } from '../../lib/fetch'
 import { TextInput } from 'react-native-paper'
 import CustomSnackBar from '../../components/Custom/CustomSnackBar'
 import { ensureSocketConnection } from '../../lib/socketio'
+import CreateGameSheet from '../../components/dartsGame/CreateGameSheet'
 
 const Darts = () => {
   const [gameCode, setGameCode] = useState('');
@@ -14,6 +15,8 @@ const Darts = () => {
 
   const [visibleSnack, setVisibleSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState('Game code is wrong');
+
+  const createGameSheetRef = useRef(null);
 
   useEffect(() => {
     ensureSocketConnection().catch(err => {
@@ -49,7 +52,14 @@ const Darts = () => {
       <ScrollView contentContainerStyle={{ flex: 1 }} keyboardShouldPersistTaps='handled'>
         <View className="w-full h-full flex items-center p-4">
           <Text className="text-white text-3xl font-psemibold pt-4">Darts</Text>
-          <View className="font-pbold border border-white rounded-xl h-64 p-4 mt-20 flex items-center justify-between">
+
+          <CustomButton
+            title="New Game"
+            containerStyle="mt-8 w-full"
+            onPress={() => createGameSheetRef.current?.present()}
+          />
+
+          <View className="font-pbold border border-white rounded-xl h-64 p-4 mt-8 flex items-center justify-between">
             <Text className="text-white text-xl font-psemibold">Control darts game with phone</Text>
             <Text className="text-white text-lg font-pregular">Enter game code</Text>
             <TextInput
@@ -71,6 +81,8 @@ const Darts = () => {
           <CustomSnackBar title={snackMessage} visible={visibleSnack} setVisible={setVisibleSnack} />
         </View>
       </ScrollView>
+
+      <CreateGameSheet ref={createGameSheetRef} />
     </SafeAreaView>
   )
 }
