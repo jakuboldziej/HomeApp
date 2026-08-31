@@ -11,7 +11,7 @@ const DrawerLayout = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
         initialRouteName='cloud'
-        drawerContent={CustomDrawerContent}
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
           drawerActiveTintColor: 'pink',
           drawerInactiveTintColor: 'white',

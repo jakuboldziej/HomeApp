@@ -8,7 +8,7 @@ const DartsDrawerLayout = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
         initialRouteName='dartsgame'
-        drawerContent={DartsDrawerContent}
+        drawerContent={(props) => <DartsDrawerContent {...props} />}
         screenOptions={{
           drawerActiveTintColor: 'pink',
           drawerInactiveTintColor: 'white',

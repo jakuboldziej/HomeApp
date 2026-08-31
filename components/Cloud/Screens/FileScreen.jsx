@@ -1,5 +1,5 @@
 import { Linking, View } from 'react-native';
-import { apiUrl } from '../../../lib/fetch';
+import { apiUrl, cfAccessHeaders } from '../../../lib/fetch';
 import { Image } from 'expo-image';
 import { Zoomable } from '@likashefqet/react-native-image-zoom';
 import React, { useRef } from 'react';
@@ -37,7 +37,7 @@ const FileScreen = () => {
         >
           <Image
             style={{ flex: 1, width: '100%' }}
-            source={{ uri: fileSource }}
+            source={{ uri: fileSource, headers: cfAccessHeaders }}
             contentFit='contain'
             transition={600}
           />

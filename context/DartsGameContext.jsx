@@ -4,7 +4,15 @@ import { router } from "expo-router"
 import { AuthContext } from "../context/AuthContext";
 import { getDartsGame } from "../lib/fetch";
 
-export const DartsGameContext = createContext()
+export const DartsGameContext = createContext({
+  game: null,
+  setGame: () => { },
+  overthrow: false,
+  setOverthrow: () => { },
+  specialState: [false, ""],
+  setSpecialState: () => { },
+  handleClick: () => { }
+})
 
 const ensureGameRecord = (gameData) => {
   if (!gameData) return gameData;

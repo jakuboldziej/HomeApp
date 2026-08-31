@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { apiUrl, getUser } from "../lib/fetch";
+import { getUser, loginUser } from "../lib/fetch";
 import * as SecureStore from 'expo-secure-store';
 import { router } from "expo-router";
 import { socket } from "../lib/socketio";
@@ -10,18 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const login = async (username, password) => {
-    const response = await fetch(`${apiUrl}/auth/login`, {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        displayName: username,
-        password: password
-      })
-    });
-
-    const fetchedUser = await response.json();
+    const fetchedUser = await loginUser(username, password);
 
     if (!fetchedUser.token) return { message: fetchedUser.message };
 
