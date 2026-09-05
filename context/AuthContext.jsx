@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
 
     if (!fetchedUser.token) return { message: fetchedUser.message };
 
-    const loggedUser = await getUser(username);
+    const loggedUser = await getUser(username, fetchedUser.token);
 
     setUser(loggedUser);
 
