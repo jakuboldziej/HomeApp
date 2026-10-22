@@ -1,5 +1,5 @@
 import { Text, View, AppState, useWindowDimensions } from 'react-native'
-import { useContext, useState, useRef, useMemo, useEffect } from 'react'
+import { useCallback, useContext, useState, useRef, useMemo, useEffect } from 'react'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { socket, ensureSocketConnection, trackRoom } from '../../lib/socketio'
@@ -29,7 +29,7 @@ const DartsGame = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [visibleModal, setVisibleModal] = useState(false)
 
-  const hideModal = () => setVisibleModal(false)
+  const hideModal = useCallback(() => setVisibleModal(false), [])
 
   const sizes = useMemo(() => {
     const isSmallScreen = height < 700
@@ -75,7 +75,18 @@ const DartsGame = () => {
       game?.tournamentId?.admin === user?.displayName)
 
   useEffect(() => {
+    if (game?.gameCode && game.gameCode !== gameCode) {
+      router.setParams({ gameCode: game.gameCode })
+    }
+  }, [game?.gameCode, gameCode])
+
+  useEffect(() => {
     if (!gameCode) return
+
+    if (game?.gameCode === gameCode) {
+      setIsLoading(false)
+      return
+    }
 
     let mounted = true
 
@@ -116,7 +127,7 @@ const DartsGame = () => {
     return () => {
       mounted = false
     }
-  }, [gameCode])
+  }, [gameCode, game?.gameCode])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {

@@ -2,7 +2,7 @@ import { createContext, useState } from "react";
 import { getUser, loginUser } from "../lib/fetch";
 import * as SecureStore from 'expo-secure-store';
 import { router } from "expo-router";
-import { socket } from "../lib/socketio";
+import { reconnectWithFreshToken, socket } from "../lib/socketio";
 
 export const AuthContext = createContext()
 
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       token: fetchedUser.token
     }));
 
-    socket.connect();
+    reconnectWithFreshToken();
 
     return fetchedUser;
   }

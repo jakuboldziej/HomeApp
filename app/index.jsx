@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { AuthContext } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import { checkSession, getUser, refreshToken } from '../lib/fetch';
-import { socket } from '../lib/socketio';
+import { reconnectWithFreshToken } from '../lib/socketio';
 import { HelperText, TextInput } from 'react-native-paper';
 import { Image } from 'expo-image';
 
@@ -61,46 +61,42 @@ const App = () => {
 
     if (alreadyLoggedIn) {
       try {
-        const loggedInUser = await getUser(alreadyLoggedIn.displayName);
+        let activeToken = alreadyLoggedIn.token;
 
-        const checkedSession = await checkSession(alreadyLoggedIn.token);
+        const checkedSession = await checkSession(activeToken);
 
         if (checkedSession.ok !== true) {
-          if (checkedSession.message === "Token expired") {
-            const refreshResponse = await refreshToken(alreadyLoggedIn.token);
-            
-            if (refreshResponse.token) {
-              await SecureStore.setItemAsync("user", JSON.stringify({
-                displayName: alreadyLoggedIn.displayName,
-                token: refreshResponse.token
-              }));
-              
-              setUser(loggedInUser);
-              router.replace("/home");
-              socket.connect();
-              setIsLoading(false);
-              return;
-            }
-          }
-          
-          return setErr("Token expired");
-        }
+          if (checkedSession.message !== "Token expired") return setErr("Token expired");
 
-        if (checkedSession.shouldRefresh) {
-          const refreshResponse = await refreshToken(alreadyLoggedIn.token);
-          
+          const refreshResponse = await refreshToken(activeToken);
+
+          if (!refreshResponse.token) return setErr("Token expired");
+
+          activeToken = refreshResponse.token;
+          await SecureStore.setItemAsync("user", JSON.stringify({
+            displayName: alreadyLoggedIn.displayName,
+            token: activeToken
+          }));
+        } else if (checkedSession.shouldRefresh) {
+          const refreshResponse = await refreshToken(activeToken);
+
           if (refreshResponse.token) {
+            activeToken = refreshResponse.token;
             await SecureStore.setItemAsync("user", JSON.stringify({
               displayName: alreadyLoggedIn.displayName,
-              token: refreshResponse.token
+              token: activeToken
             }));
           }
         }
 
+        const loggedInUser = await getUser(alreadyLoggedIn.displayName, activeToken);
+
+        if (!loggedInUser?.displayName) return setErr("Token expired");
+
         setUser(loggedInUser);
 
         router.replace("/home");
-        socket.connect();
+        reconnectWithFreshToken();
       } catch (err) {
         console.error(err.stack);
       } finally {

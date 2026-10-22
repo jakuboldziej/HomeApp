@@ -9,7 +9,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "emulator": "emulator -avd nexus"
+    "emulator": "emulator -avd nexus",
+    "lint": "expo lint"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.6.4",
@@ -45,6 +46,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~10.0.0",
     "tailwindcss": "^3.3.2"
   },
   "private": true
